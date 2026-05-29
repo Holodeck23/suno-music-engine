@@ -26,6 +26,30 @@ Always read the relevant reference files BEFORE composing. The reference files c
 
 ---
 
+## MANDATORY PRE-DELIVERY SELF-CHECK
+
+Before delivering ANY Suno output to the user, run this checklist verbatim. Do not skip. State the verified counts in the delivery so the user can audit.
+
+**Hard ceilings (Model v4.5, v5, v5.5 — confirmed via Suno docs 2026):**
+- Style prompt field: **1,000 characters maximum** (target: 200–300 for clarity)
+- Lyrics field (incl. brackets): **5,000 characters maximum** (target: under 4,000 to leave margin)
+- Single-shot generation length: **8 minutes maximum** (use Extend for longer)
+
+**Pre-delivery checklist:**
+1. Count the style prompt characters. Confirm under 1,000. State the count.
+2. Count the lyrics field characters (including brackets). Confirm under 4,000 (hard limit 5,000). State the count.
+3. Verify every bracket contains production direction. No bare `[Chorus]` or `[Verse]`.
+4. Verify final tag is `[End]`.
+5. Verify no artist or song names appear in the style prompt.
+6. Verify no em dashes anywhere in the output.
+7. Verify the style prompt is single-line and comma-separated.
+8. If instrumental: verify "instrumental, no vocals, no spoken words" appears in style prompt AND first metatag.
+9. Keep metatags CLINICAL. Suno's copyright filter is a fuzzy lyric-matcher: vivid/poetic/title-like phrases (similes, metaphors, "weightless," "torn to pieces," famous quotes) get matched as copyrighted lyrics and rejected even inside brackets. Use technique/dynamics/tempo language only. Emotion comes from the musical CHOICES, not evocative words Suno cannot play. See `references/suno-formatting.md` §9 and §17.
+
+If any check fails, fix it and re-count BEFORE delivering. Do not deliver and apologise after — fix it first.
+
+---
+
 ## §1: MAPPING MODE — Song Analysis
 
 ### Purpose
@@ -97,6 +121,20 @@ Every map must include:
 - Do NOT use vague language ("the band gets heavier") — specify which instruments change and how
 - Do NOT skip sections even if structurally similar to earlier ones — note similarities AND differences
 - Do NOT describe "vibe" without describing the specific instruments creating it
+
+---
+
+## LYRIC VOICE PRINCIPLES (apply across all song-creation modes)
+
+When writing lyrics for any Suno output:
+
+- **Cryptic over obvious.** Plain narrative lyrics fail even when the underlying material is strong. Every key line should work on two levels — literal AND metaphorical. "Five mouths talking and one of them is mine" beats "Five chats open." Concrete sensory detail stays; meaning sits underneath.
+- **No on-the-nose homages.** When mapping from a reference song, do NOT echo its hook line, title, or signature phrase in your new song. The musical structure honors the source; the lyrics must be original. If the reference is "Last Train to Satansville," do not write "Last Train to X."
+- **Double-meaning hooks.** Choruses can repeat and be singable, but the hook itself should be poetic, not declarative. "Stranger in the glass / wears my face better than I do" beats "Last train to brain fry."
+- **Avoid Suno-isms.** "Neon," "echo," "shadow," "whispers in the dark" — these are AI-default lyric biases. Use unusual concrete imagery: "the small breath upstairs," "the clock cut the wire," "every map I draw the country grows."
+- **Strong refrains can carry across songs.** If a refrain has worked once and the user has signaled approval, it can recur in their catalog as a signature. Do not overuse — but don't avoid it either.
+
+These principles override the genre-template lyric defaults in `references/suno-formatting.md` §6.
 
 ---
 
@@ -280,6 +318,57 @@ All modes share this overarching framework. Great music — whether a single ins
 Not every track needs all four. But across an album, all four should be represented. Within a single track, aim for at least two.
 
 The Steve Vai corollary: true emotional resonance occurs when the creator bypasses conscious mechanical thought to access a deeper, intuitive state. The Suno prompt must not be a haphazard assembly of genre tags — it must be a highly specific, deeply visualised emotional target. Visualise the exact emotional endpoint and atmospheric texture BEFORE writing the prompt.
+
+---
+
+## §7: SUNO MODEL v5.5 — Features, Sliders, and Settings
+
+Suno released v5.5 on 2026-03-25 as the most personalized model to date. The model rewards modular, layered, nuanced prompt descriptors over simple genre tags. The compositional process below applies to v5 and v5.5; the additional features below are v5.5-specific.
+
+### v5.5 Personalization Layers
+
+**Voices** (evolution of Personas)
+- Captures the user's actual voice for use in generations
+- Useful for both singers (demoing without studio) and non-singers (hearing themselves on a track)
+- **When Voices is active, omit gender and vocal-tone descriptors from the style prompt** — they conflict with the cloned voice and waste character budget
+- Voices locks vocal characteristics only; it does NOT lock instrumentation or mix
+
+**Custom Models** (Pro and Premier subscribers only)
+- Users can train up to 3 model variants on uploaded reference tracks
+- Requires 5+ original tracks for effective training
+- When a Custom Model is in use, the production identity shifts into the model — simpler style prompts work better
+- Train separate Custom Models for stylistically distinct sounds; do not try to train one model on contradictory styles
+
+**My Taste** (all users)
+- Adaptive preference system that learns from generation history, likes, and interactions
+- Biases future generations toward the user's preferred styles, production aesthetics, vocal qualities
+- Cannot be directly addressed via prompts — it operates as background bias
+
+### v5.5 Creative Sliders
+
+Three sliders control compositional behavior. Defaults are 50% / Balanced. Move them only with intent.
+
+| Slider | Range | Default | Purpose | When to push |
+|---|---|---|---|---|
+| **Weirdness** | Safe → Chaos (0–100, default 50) | 50 | Controls novelty: low picks the highest-probability musical event at each step (conventional output); high allows lower-probability events (surprising combinations) | Push higher (60–80) for genre-blends, experimental work, avoiding tropes. Drop lower (20–30) for radio-ready, recognisable pop/rock. |
+| **Style Influence** | Loose → Strong (0–100, default 50) | 50 | Controls loyalty to the style prompt | Push to 70–80 when the style prompt is precise and you want strict adherence. **Do not exceed 80** — Suno plateaus there and reduces phrasing variation, especially in vocals. Drop to 30–40 for more interpretive freedom. |
+| **Audio Influence** | Loose → Strong (0–100, default 50) | 50 | Only appears when Audio Upload (Inspo) is in use. Controls how strongly Suno follows the uploaded clip | Higher = upload leads melody/rhythm. Lower = upload is texture/reference. **v5.5 quirk:** even at low settings, melodic flavour from the upload bleeds through. Treat this slider as less precise than Weirdness/Style. |
+
+### v5.5 Prompting Adjustments
+
+When composing for v5.5 specifically:
+- Prefer modular, layered descriptors: "warm fretless bass with finger-style articulation" beats "bass"
+- Use negative constraints explicitly: "no autotune, no EDM drops, no pop hooks" at end of style prompt
+- If Voices is active, drop vocal descriptors from style prompt (they're already locked)
+- If Custom Model is active, simplify style prompt — let the model carry the production identity
+- 4-layer style prompt structure works best: (1) tempo + key + energy anchor, (2) specific instrumentation with adjectives, (3) vocal direction (or skip if Voices active), (4) 2–3 negative constraints
+
+### v5.5 Hard Limits (confirmed via Suno docs)
+
+- Style field: **1,000 characters maximum** (target: 200–300 for prompt clarity)
+- Lyrics field: **5,000 characters maximum** (target: under 4,000 to leave margin)
+- Single-shot generation: **8 minutes maximum**
+- For longer compositions: use Extend, Replace Section, or DAW-side stem editing
 
 ---
 
