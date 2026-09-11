@@ -1,6 +1,6 @@
 # Suno Music Engine
 
-A Claude Code / Claude.ai skill for AI music production with Suno. Covers the full pipeline:
+A platform-agnostic Agent Skill for AI music production with Suno v6. The portable definition builds optimized adapters for Claude Code and OpenAI Codex and covers the full pipeline:
 
 1. **Mapping** — Reverse-engineer existing songs into timestamp-indexed structural blueprints
 2. **Song Creation** — Write original vocal songs formatted for Suno (style prompt + bracketed lyrics)
@@ -8,19 +8,24 @@ A Claude Code / Claude.ai skill for AI music production with Suno. Covers the fu
 4. **Album Architecture** — Plan, sequence, and maintain sonic consistency across cohesive albums and EPs
 5. **Genre Fusion** — Blend genres with intent (the Daft Punk / Radiohead / Kendrick playbook)
 6. **Personal Translation** — Turn a person's life patterns and emotional landscape into mapped instrumental architecture
+7. **V6 Editing and Multi-Input Workflows** — Make atomic section/lyric edits, mash up authorized sources, and compose from text, audio, images, or video
 
 Reference files cover Suno-specific formatting, music theory backbone (key/BPM/mode/structure), album sequencing psychology, and personal-context-to-music translation methodology.
 
 ---
 
-## Install
+## Install with Polyskill
 
 ```bash
-git clone <this-repo> ~/.claude/skills/suno-music-engine
-cp ~/.claude/skills/suno-music-engine/USER-CONCEPTS.template.md ~/.claude/skills/suno-music-engine/USER-CONCEPTS.md
+git clone https://github.com/Holodeck23/suno-music-engine.git
+cd suno-music-engine
+polyskill validate
+polyskill install
 ```
 
-The skill auto-triggers when Claude Code or Claude.ai detects Suno-related intent (song mapping, instrumentals, album planning, etc.).
+By default, Polyskill installs the generated adapters to `~/.claude/skills/suno-music-engine` and `~/.agents/skills/suno-music-engine`. Use `polyskill install --target claude` or `polyskill install --target codex` for one runtime.
+
+Copy `USER-CONCEPTS.template.md` to `USER-CONCEPTS.md` inside the installed skill if you want private local concept seeds. That file is ignored by Git.
 
 ---
 
@@ -28,22 +33,25 @@ The skill auto-triggers when Claude Code or Claude.ai detects Suno-related inten
 
 ```
 suno-music-engine/
-├── SKILL.md                              ← Skill entry point + routing table
+├── definition.md                         ← Portable source of truth
+├── polyskill.yaml                        ← Claude and Codex build targets
 ├── README.md                             ← This file
 ├── USER-CONCEPTS.template.md             ← Blank template for personal scratch space
-├── USER-CONCEPTS.md                      ← Your personal seeds/examples (gitignored)
-└── references/
-    ├── suno-formatting.md                ← Suno prompt engineering: style, brackets, troubleshooting
-    ├── music-theory-engine.md            ← Key/mode/BPM/structure/dynamics framework
-    ├── album-architecture.md             ← Sequencing, arc psychology, master prompt system
-    └── personal-context-translation.md   ← Translating a life into instrumental architecture
+├── references/
+│   ├── suno-formatting.md                ← Suno prompt engineering: style, brackets, troubleshooting
+│   ├── music-theory-engine.md            ← Key/mode/BPM/structure/dynamics framework
+│   ├── album-architecture.md             ← Sequencing, arc psychology, master prompt system
+│   └── personal-context-translation.md   ← Translating a life into instrumental architecture
+└── dist/
+    ├── claude/suno-music-engine/         ← Generated Claude Code adapter
+    └── codex/suno-music-engine/          ← Generated OpenAI Codex adapter
 ```
 
 ---
 
 ## Reusable vs Personal
 
-The methodology in `SKILL.md` and `references/` is fully generic. No personal info, no project bias — fork it freely.
+The methodology in `definition.md` and `references/` is generic. Generated runtime files are build artifacts; edit the portable source and rebuild rather than hand-editing `dist/`.
 
 `USER-CONCEPTS.md` is your private scratch space. It's gitignored so your concept seeds, worked examples, and personal mappings stay local. When you fork this repo, copy `USER-CONCEPTS.template.md` to `USER-CONCEPTS.md` and fill it in with your own material.
 

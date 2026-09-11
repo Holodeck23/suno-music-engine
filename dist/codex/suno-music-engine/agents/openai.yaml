@@ -1,0 +1,3 @@
+interface:
+  short_description: The complete AI music production system — from mapping
+  default_prompt: Use $suno-music-engine to ...

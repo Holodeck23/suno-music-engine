@@ -1,0 +1,8 @@
+# Personal scratch space — keep your concept seeds and worked examples local
+USER-CONCEPTS.md
+
+# Polyskill local build state
+.polyskill/
+
+# OS junk
+.DS_Store

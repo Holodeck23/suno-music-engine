@@ -41,18 +41,18 @@ Write this arc as a simple emotional map before you write a single bracket:
 
 ```
 Example A (Unresolved):
-Restless searching → Excited discovery → Ambitious overbuilding → 
-Collapse at complexity → Grinding endurance → Distance and doubt → 
-Attempt #2 → Harder collapse → Vulnerable honesty → 
+Restless searching → Excited discovery → Ambitious overbuilding →
+Collapse at complexity → Grinding endurance → Distance and doubt →
+Attempt #2 → Harder collapse → Vulnerable honesty →
 Tentative rebuild → Open/unresolved ending
 
 Example B (Cyclical):
-Ritual and routine → Spark of inspiration → Deep dive → 
+Ritual and routine → Spark of inspiration → Deep dive →
 System grows beyond capacity → Overwhelm → Forced stop →
 Return to routine → Spark again → Same dive, different key
 
 Example C (Arrival):
-Chaos → Discovery of the thing → Resistance → 
+Chaos → Discovery of the thing → Resistance →
 Commitment → Grind → Breakthrough → Earned resolution
 ```
 

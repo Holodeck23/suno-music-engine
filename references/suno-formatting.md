@@ -1,6 +1,6 @@
 # Suno Formatting Reference
 
-Complete prompt engineering reference for Suno AI — covering vocal songs, instrumentals, and album-level consistency. Every technique tested, every behavior documented.
+Prompt engineering reference for Suno AI v6, covering vocal songs, instrumentals, editing, multimodal inputs, and album-level consistency. Separate official capabilities from field-tested heuristics.
 
 ## Table of Contents
 1. How Suno Reads Input
@@ -19,6 +19,8 @@ Complete prompt engineering reference for Suno AI — covering vocal songs, inst
 14. Persona Locking and Audio Referencing
 15. The Extension and Post-Production Workflow
 16. Advanced Techniques
+17. Controlling Contrast, Transitions, and Multi-Section Songs
+18. V6 Model and Workflow Controls
 
 ---
 
@@ -30,7 +32,7 @@ Suno processes two distinct inputs:
 - A comma-separated string defining the global sonic character
 - Sets the overall palette: genre, tempo, key, instrumentation, vocal type, production qualities
 - Sweet spot: 15-30 descriptive terms (5-8 core descriptors minimum)
-- Do NOT exceed ~50 words / ~300 characters — Suno deprioritises terms in long prompts
+- **Operational ceiling: 1,000 characters** (carried forward from the pre-v6 interface). **Target: under 300 characters** for clarity. Suno's v6 launch materials do not restate this limit, so verify against the live UI if input is rejected or truncated.
 - Do NOT include artist names or song titles — Suno may attempt to clone rather than create
 - Specific genre terminology works better than generic ("Scandinavian melodic hard rock" > "rock")
 - **Left-to-right priority** — Suno weights the first terms heaviest. Put the dominant genre first.
@@ -41,7 +43,7 @@ Suno processes two distinct inputs:
 - Brackets are the primary moment-to-moment control tool
 - For instrumentals: the lyrics field contains ONLY bracketed metatags
 - More specific, evocative language produces better results than generic terms
-- **Hard limit: ~5,000 characters** for the lyrics field. Budget 4,000 for metatags to leave margin.
+- **Operational ceiling: ~5,000 characters** for the lyrics field, carried forward from the pre-v6 interface. Budget 4,000 for metatags and verify against the live UI if behavior changes.
 
 ---
 
@@ -324,6 +326,10 @@ Cinematic orchestral, [mood], instrumental, no vocals, no spoken words, [lead in
 ### "Suno-isms" — overuse of words like "neon," "echo," "shadow"
 **Fix:** Use highly concrete, specific imagery in lyrics. Replace abstract terms with sensory detail. The AI defaults to its training biases when given vague input.
 
+### "Your lyrics contain copyrighted material" on an instrumental
+**Cause:** Suno scans the lyrics field with a FUZZY lyric-matcher. Vivid, poetic, or title-like phrases inside brackets get matched against its corpus and rejected — even with no sung lyrics. Confirmed triggers: similes ("hard body hits like fists"), metaphors ("weight not relief"), phrases that are song titles ("weightless," "torn to pieces"), and famous quotes/speeches.
+**Fix:** Rewrite the metatags CLINICAL — technique, dynamics, tempo, mix only. Strip all simile, metaphor, and lyric-like phrasing. The emotion comes from the musical choices (key, mode, dynamics, technique), not from evocative words. Terse alone is not enough; it must be non-poetic. Backstop: flip the Instrumental toggle ON (stops Suno scanning the lyrics box, but discards structural tags — then push arrangement into the style prompt).
+
 ---
 
 ## 13. Album Consistency: The Master Style Prompt System
@@ -417,3 +423,63 @@ Use consistent section labeling language across all album tracks. If your album 
 
 ### The Core Reference Song Method
 Generate one "hero track" that perfectly captures your sound. Use its audio as the reference seed for all subsequent tracks. This is the single most effective consistency technique available.
+
+---
+
+## 17. Controlling Contrast, Transitions, and Multi-Section Songs
+
+The biggest control lesson: **the style prompt is GLOBAL.** Suno applies it as one mood/genre/key across the ENTIRE generation. It does NOT read "bright opening that darkens" as a timeline — it averages to one feel, and that feel overrides your section brackets. A track with opposite halves cannot be coaxed out of a single-mood global field. (A bright-to-dark piece failed because the global field said "bright hopeful," which steamrolled every dark section bracket.)
+
+### The neutral-global + aggressive-local rule (highest-leverage technique)
+- Keep the **global style field NEUTRAL and range-declaring** — describe the journey/contrast, not one mood. e.g. "dynamic progressive instrumental, extreme contrast, acoustic to metal to electronic" NOT "bright hopeful acoustic."
+- Put the **specific mood / genre / instrumentation / dynamics in per-section parameterized metatags**, which override the global field LOCALLY: `[Verse: whispered, acoustic only]` then `[Chorus: full distorted band]`. This works in ONE generation.
+- Contrast through **instrumentation and dynamics is reliable.** Contrast through **music theory (key, time signature) is not** (see below).
+
+### V6 Variety is not a direct contrast knob
+- The v6 **Variety** control adjusts and updates the style prompt to diversify outputs.
+- Set Variety to **0** when exact retention of authored style tags matters.
+- Use **v6-wild** when the goal is exploratory or surprising composition. Do not translate legacy Weirdness or Style Influence percentages directly into Variety settings.
+- Create contrast through explicit section-level instrumentation, dynamics, and transition instructions; inspect any prompt changes introduced by Variety.
+
+### What ONE generation genuinely CANNOT do (confirmed 2026)
+- **Generate a time signature.** You cannot prompt Suno to render 7/8 or 6/8. Studio 1.2's time-signature support is an editing-surface tool (grid/metronome, post-generation); it does NOT condition the generative model. Do not rely on odd-meter prompts.
+- **Lock exact BPM.** "128 BPM" is approximate guidance, not a metronome.
+- **Force a precise key modulation.** `[Key Change]` exists but Suno does not model harmony; mid-song major→minor reversals are unreliable in one pass.
+
+### Multi-pass Extend — the only reliable way to change key / genre / tempo
+Because the style field is global PER GENERATION, a genuine half-to-half transformation needs two (or more) generations welded with Extend, each with its OWN style prompt:
+1. Generate Pass 1 with the first mood's style prompt (no `[End]`). End it at the pivot point.
+2. Hit **Extend** on the result and **swap in a new style prompt** for Pass 2 (different key / genre / tempo / mood). Extend lets you change the style — that is what flips the global mood at the seam.
+3. The transformation is real because the engine's whole mood actually changes at the cut while continuing the same audio. The warmth does not fade, it drops.
+For Pass 2, state the preservation boundary and the new target explicitly. In v6 Simple Mode, request the section change directly when localized editing can preserve the approved material more safely than an Extend pass.
+
+### Mode-and-technique control (how far words actually get you)
+- Naming **modes** (Dorian, Aeolian, Phrygian dominant, harmonic minor, Lydian, Hijaz maqam) biases Suno toward that color, especially strongly-coloured modes. It approximates pitch rather than playing exact scales, but the flavour lands.
+- Naming **playing technique** reliably changes the sound: travis picking vs tremolo vs sweep vs palm-mute vs legato vs tapping (guitar); wavetable morphing vs sidechain vs granular vs supersaw vs portamento (synth). Technique words are MORE reliable than scale names.
+- Anchor all sections to ONE root (e.g. everything in E) and let the MODE carry the emotional journey — coherent and controllable. Same note, the mode changes the meaning.
+
+### World / Eastern fusion (maqam and raga)
+- Suno recognises **maqam** and **raga** names. Use `maqam hijaz` (the quintessential "desert" sound, ~Phrygian dominant in Western terms), `maqam bayati`, or specific ragas like `Raag Yaman`. Add `microtonal, quarter-tone ornaments` — Suno approximates microtones but the modal flavour lands.
+- Name **2–3 Eastern instruments, not all** (Suno drops some past ~4): oud, sitar, tabla, darbuka/doumbek, tanpura (drone bed), ney, bansuri, qanun.
+- "Moroccan roll" / Eastern hard rock signature: **oud or sitar doubling the distorted guitar riff in unison**, hand percussion under the groove, tanpura drone underneath. Borrow the raga arc: free-time alap intro → percussion enters → riff/groove → solos → breakdown → unison tihai-style hits to close.
+
+---
+
+## 18. V6 Model and Workflow Controls
+
+### Model routing
+- **v6:** precise, reliable, polished generations for a resolved brief; Pro and Premier.
+- **v6-wild:** varied, unpredictable exploration; Pro and Premier.
+- **v6-mini:** fast sketches and free-tier work; available to everyone.
+
+### Atomic natural-language edits
+When changing an existing song, specify four things: target, preserve, change, and reconnection. Prefer one edit per pass. A narrow instruction such as "change only the chorus vocal arrangement; preserve tempo, lead voice, drums, bass, verses, and mix" is safer than restating the entire song.
+
+### Multiple inputs
+V6 can reference Suno songs, playlists, audio uploads, images, and video in one request. Label each source and assign a role. For audio, include timestamps. For images or video, name the musical property to derive, such as pacing, density, color, motion, or emotional arc; do not assume the model will infer the intended mapping.
+
+### Variety
+Variety modifies the style prompt. Use **0** for strict authored tags. Raise it for divergent interpretations, and review the resulting prompt before treating it as constraint-preserving.
+
+### Max Mode
+Max Mode costs additional credits and is best for tracks over two minutes, close covers, style transfer, and consistent vocals or style across a full track. Use standard mode for short sketches and fast iteration.
