@@ -26,6 +26,7 @@ Read the request and route to the appropriate mode. Multiple modes can be combin
 | "Write something about me / my life / my journey / who I am" | **PERSONAL TRANSLATION** | `references/personal-context-translation.md` |
 | "Edit / replace / fix one part of this song" | **V6 EDITING** | This file §7 + `references/suno-formatting.md` |
 | "Mash up / sample / combine these songs, clips, images, or video" | **V6 MULTI-INPUT** | This file §7 |
+| "Animate this song / make a music video / add a video component" | **MUSIC VIDEO** | `references/music-video-production.md` |
 
 Always read the relevant reference files BEFORE composing. The reference files contain the deep technical detail — key-to-mood mappings, BPM ranges, structural archetypes, Suno-specific syntax, album sequencing psychology, and production descriptor libraries.
 
@@ -58,6 +59,17 @@ Suno publishes v6-specific limits.
 If any check fails, fix it and re-count BEFORE delivering. Do not deliver and apologise after — fix it first.
 
 ---
+
+## Song-to-video handoff
+
+For video production from a selected song, read `references/music-video-production.md`.
+The accepted audio determines timing; inspect embedded lyric tracks before arranging
+transcription. Deliver a watchable pilot and support timestamped feedback before
+building the entire video. `scripts/extract-video-timing.py` provides local extraction.
+
+For every new vocal-song delivery, state the selected model and a concise proposed
+control preset if the user has those controls. Distinguish proposed settings from
+listening-tested results; do not assume paid features are available.
 
 ## §1: MAPPING MODE — Song Analysis
 
@@ -424,6 +436,8 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 
 **User provides multiple sources →** Assign each source a role and timestamp → Define assembly hierarchy and preservation constraints → Deliver a v6 Simple Mode instruction
 
+**User wants a music video →** Read music-video-production → Inspect selected audio and timing → Build and review a pilot → Iterate with timestamped feedback → Expand and verify the render
+
 **User asks about Suno mechanics →** Explain style prompt vs inline bracket interaction, regeneration strategies, common fixes (see suno-formatting reference)
 
 ---
@@ -435,3 +449,5 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 - **`references/music-theory-engine.md`** — The music theory backbone: key-to-mood mapping, modal characteristics, BPM ranges by genre, structural archetypes, tension-release mechanics, harmonic progressions, instrument role architecture, dynamic range as narrative, compositional techniques for emotional impact. **Read this before instrumental composition or when selecting musical foundation parameters.**
 
 - **`references/album-architecture.md`** — Album-level planning: the Man in a Hole arc, track archetypes, the Master Style Prompt system, per-track variation strategy, persona locking, the five-phase workflow, concept album frameworks (AI and Modern Life themes), genre-transcendence case studies, interlude strategy, the 10 Commandments. **Read this before any album or EP planning work.**
+
+- **`references/music-video-production.md`** — Selected audio, embedded timing extraction, procedural animation pilots, frame/range direction, deterministic rendering and export verification. Read for song-to-video production.
