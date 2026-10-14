@@ -27,6 +27,7 @@ Read the request and route to the appropriate mode. Multiple modes can be combin
 | "Edit / replace / fix one part of this song" | **V6 EDITING** | This file §7 + `references/suno-formatting.md` |
 | "Mash up / sample / combine these songs, clips, images, or video" | **V6 MULTI-INPUT** | This file §7 |
 | "Animate this song / make a music video / add a video component" | **MUSIC VIDEO** | `references/music-video-production.md` |
+| "Write a YouTube description / channel bio / can I release this Suno track?" | **YOUTUBE RELEASE** | `references/youtube-release.md` |
 
 Always read the relevant reference files BEFORE composing. The reference files contain the deep technical detail — key-to-mood mappings, BPM ranges, structural archetypes, Suno-specific syntax, album sequencing psychology, and production descriptor libraries.
 
@@ -34,7 +35,7 @@ Always read the relevant reference files BEFORE composing. The reference files c
 
 ## MANDATORY PRE-DELIVERY SELF-CHECK
 
-Before delivering ANY Suno output to the user, run this checklist verbatim. Do not skip. State the verified counts in the delivery so the user can audit.
+Before delivering Suno composition prompts or lyrics, run this checklist. State the verified counts in the delivery so the user can audit. YouTube titles, descriptions, channel bios and release guidance use `references/youtube-release.md` instead; do not apply composition tags or lyric-field limits to publishing copy.
 
 **Operational ceilings carried forward from the pre-v6 interface:**
 - Style prompt field: **1,000 characters maximum** (target: 200–300 for clarity)
@@ -439,6 +440,8 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 
 **User wants a music video →** Read music-video-production → Inspect selected audio and timing → Build and review a pilot → Iterate with timestamped feedback → Expand and verify the render
 
+**User wants to release a track on YouTube →** Read youtube-release → Ground the copy in the selected song and artist profile → Deliver a title, video description and channel bio as needed → Explain applicable rights and AI disclosure without claiming publication
+
 **User asks about Suno mechanics →** Explain style prompt vs inline bracket interaction, regeneration strategies, common fixes (see suno-formatting reference)
 
 ---
@@ -452,3 +455,5 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 - **`references/album-architecture.md`** — Album-level planning: the Man in a Hole arc, track archetypes, the Master Style Prompt system, per-track variation strategy, persona locking, the five-phase workflow, concept album frameworks (AI and Modern Life themes), genre-transcendence case studies, interlude strategy, the 10 Commandments. **Read this before any album or EP planning work.**
 
 - **`references/music-video-production.md`** — Selected audio, embedded and word-level timing, reference-video study and design systems, procedural animation pilots, style-frame lessons, frame/range direction, deterministic rendering and export verification. Read for song-to-video production.
+
+- **`references/youtube-release.md`** — YouTube titles, video descriptions, channel bios, Suno subscription timing and commercial-use rights, AI disclosure, and release-status recording. Read when preparing a track or channel for YouTube.

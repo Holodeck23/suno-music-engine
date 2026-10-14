@@ -10,6 +10,9 @@ A platform-agnostic Agent Skill for AI music production with Suno v6. The portab
 6. **Personal Translation** — Turn a person's life patterns and emotional landscape into mapped instrumental architecture
 7. **V6 Editing and Multi-Input Workflows** — Make atomic section/lyric edits, mash up authorized sources, and compose from text, audio, images, or video
 
+8. **Music Videos** — Build and verify animated videos against the selected recording and measured timing
+9. **YouTube Releases** — Prepare titles, descriptions and channel bios with grounded rights and AI disclosure guidance
+
 Reference files cover Suno-specific formatting, music theory backbone (key/BPM/mode/structure), album sequencing psychology, and personal-context-to-music translation methodology.
 
 ---
@@ -41,7 +44,9 @@ suno-music-engine/
 │   ├── suno-formatting.md                ← Suno prompt engineering: style, brackets, troubleshooting
 │   ├── music-theory-engine.md            ← Key/mode/BPM/structure/dynamics framework
 │   ├── album-architecture.md             ← Sequencing, arc psychology, master prompt system
-│   └── personal-context-translation.md   ← Translating a life into instrumental architecture
+│   ├── personal-context-translation.md   ← Translating a life into instrumental architecture
+│   ├── music-video-production.md         ← Audio timing, animation, rendering and verification
+│   └── youtube-release.md                ← Publishing copy, commercial-use rights and AI disclosure
 └── dist/
     ├── claude/suno-music-engine/         ← Generated Claude Code adapter
     └── codex/suno-music-engine/          ← Generated OpenAI Codex adapter
@@ -64,6 +69,7 @@ The methodology in `definition.md` and `references/` is generic. Generated runti
 - "Plan a 10-track concept album about [theme]"
 - "Make me an instrumental in D Dorian, 126 BPM, that blurs organic guitars and digital synths"
 - "Translate my life into an instrumental — I'll give you the context"
+- "Write the YouTube description and channel bio for my Suno music video"
 
 ---
 

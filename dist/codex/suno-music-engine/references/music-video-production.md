@@ -96,6 +96,10 @@ Mux the accepted audio with rendered frames and check output dimensions, frame r
 
 Distinguish these states: pilot built, browser checks passed, render exported, playback visually/audibly reviewed, user accepted, full song complete. Report only states actually reached. Do not claim to have listened when only metadata or subtitles were inspected.
 
+## YouTube release handoff
+
+Once the user wants to publish the finished video, read `youtube-release.md` for title, description, channel bio, Suno rights and YouTube AI disclosure. A completed render or upload is not evidence of a public release. Keep the artist-specific copy and actual publication status beside the durable release materials.
+
 ## Improve the skill from the experiment
 
 Record demonstrated failures and the correction that worked. Add portable guidance after observing behavior; keep song-specific media, private stories and generation logs out of reusable skill references. For song deliveries, include the selected model and a proposed control preset, conditional on controls actually available. Identify suggested slider values as untested starting points until auditioned.
