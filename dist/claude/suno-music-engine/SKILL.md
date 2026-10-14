@@ -68,7 +68,8 @@ If any check fails, fix it and re-count BEFORE delivering. Do not deliver and ap
 For video production from a selected song, read `references/music-video-production.md`.
 The accepted audio determines timing; inspect embedded lyric tracks before arranging
 transcription. Deliver a watchable pilot and support timestamped feedback before
-building the entire video. `scripts/extract-video-timing.py` provides local extraction.
+building the entire video. `scripts/extract-video-timing.py` provides local extraction;
+`scripts/align-lyric-words.py` turns line cues into word timing for kinetic typography.
 
 For every new vocal-song delivery, state the selected model and a concise proposed
 control preset if the user has those controls. Distinguish proposed settings from
@@ -453,4 +454,4 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 
 - **`references/album-architecture.md`** — Album-level planning: the Man in a Hole arc, track archetypes, the Master Style Prompt system, per-track variation strategy, persona locking, the five-phase workflow, concept album frameworks (AI and Modern Life themes), genre-transcendence case studies, interlude strategy, the 10 Commandments. **Read this before any album or EP planning work.**
 
-- **`references/music-video-production.md`** — Selected audio, embedded timing extraction, procedural animation pilots, frame/range direction, deterministic rendering and export verification. Read for song-to-video production.
+- **`references/music-video-production.md`** — Selected audio, embedded and word-level timing, reference-video study and design systems, procedural animation pilots, style-frame lessons, frame/range direction, deterministic rendering and export verification. Read for song-to-video production.
