@@ -9,11 +9,10 @@ A platform-agnostic Agent Skill for AI music production with Suno v6. The portab
 5. **Genre Fusion** — Blend genres with intent (the Daft Punk / Radiohead / Kendrick playbook)
 6. **Personal Translation** — Turn a person's life patterns and emotional landscape into mapped instrumental architecture
 7. **V6 Editing and Multi-Input Workflows** — Make atomic section/lyric edits, mash up authorized sources, and compose from text, audio, images, or video
-
 8. **Music Videos** — Build and verify animated videos against the selected recording and measured timing
 9. **YouTube Releases** — Prepare titles, descriptions and channel bios with grounded rights and AI disclosure guidance
 
-Reference files cover Suno-specific formatting, music theory backbone (key/BPM/mode/structure), album sequencing psychology, and personal-context-to-music translation methodology.
+Reference files cover Suno formatting, music theory, album sequencing, personal translation, lyric-driven and instrumental video production, rendering lessons, and YouTube release preparation. See [video capabilities](docs/video-capabilities.md) for the bundled tools and implementation boundaries.
 
 ---
 
@@ -46,7 +45,12 @@ suno-music-engine/
 │   ├── album-architecture.md             ← Sequencing, arc psychology, master prompt system
 │   ├── personal-context-translation.md   ← Translating a life into instrumental architecture
 │   ├── music-video-production.md         ← Audio timing, animation, rendering and verification
+│   ├── instrumental-video-production.md  ← Stems, tempo drift and music-driven animation
 │   └── youtube-release.md                ← Publishing copy, commercial-use rights and AI disclosure
+├── scripts/
+│   ├── extract-video-timing.py            ← Embedded lyric cues and audio identity
+│   └── align-lyric-words.py               ← Vocal-stem word alignment
+├── docs/video-capabilities.md            ← Coverage and implementation inventory
 └── dist/
     ├── claude/suno-music-engine/         ← Generated Claude Code adapter
     └── codex/suno-music-engine/          ← Generated OpenAI Codex adapter

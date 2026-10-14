@@ -2,6 +2,8 @@
 
 Use this mode when the user wants an animated video for an accepted song. It is separate from using a video as a musical reference in Suno. Preserve the user's chosen recording and visual direction; do not regenerate the song to simplify animation.
 
+For instrumentals or detailed per-stem animation, also read `instrumental-video-production.md`. For a list of bundled helpers and project-specific implementations, see `../docs/video-capabilities.md`.
+
 ## Audio is the timing authority
 
 Keep the original audio, its SHA256, generation identifier if present, accepted lyrics and timing source in the durable production folder. Inspect codecs, duration, metadata and subtitle streams before proposing transcription or an external API. Some Suno M4A downloads contain a timed `mov_text` lyric track, even if the actual audio codec is Opus.
@@ -95,6 +97,16 @@ Use the same scene evaluation and typography in preview and export. Confirm the 
 Mux the accepted audio with rendered frames and check output dimensions, frame rate, video/audio duration, decode success and representative frames. Bind the output hash to the audio hash, timing file, caption offset and source revision or file hashes. Preserve intermediates needed to reproduce or investigate the export.
 
 Distinguish these states: pilot built, browser checks passed, render exported, playback visually/audibly reviewed, user accepted, full song complete. Report only states actually reached. Do not claim to have listened when only metadata or subtitles were inspected.
+
+## Large renders, resumability and delivery size
+
+Measure encoding cost in the pilot. High-strength per-pixel animated grain made one 41-second pilot about 1 GB; coarser 2x2 grain at lower strength plus CRF 18 reduced the later master to about 399 MB. Those are observations from different pilot passes, not a controlled benchmark. Tune grain and inspect motion before sacrificing the whole image to more compression. Keep a master and a smaller review derivative, clearly labeled; CRF 18 and 24 were useful starting points in this production, not universal settings.
+
+Render chunks to temporary names and mark them complete only after successful encoding. Resume only chunks whose source/audio/analysis identity, frame range, dimensions and encoding settings match the current render. File existence alone is insufficient after code or timing changes. Keep concurrent workers within the machine's measured capacity.
+
+Stream or chunk SHA256 hashing for large media. Reading a multi-gigabyte video into a single Node buffer failed after a successful 2.9 GB export. Separate manifest generation from rendering so a failed bookkeeping step can be repaired without rerendering the film. A repaired manifest must identify the source revision actually rendered, not silently bind the video to newer source files.
+
+Preserve the selected original audio as the mux source; do not compound lossy encoding by using the browser playback derivative. If delivery compatibility requires transcoding, derive it from the original and record the codec conversion. Check final-frame coverage and audio/video endpoints on the encoded output, allowing for documented frame rounding.
 
 ## YouTube release handoff
 

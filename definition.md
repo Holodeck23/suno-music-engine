@@ -41,7 +41,7 @@ constraints:
 
 # Suno Music Engine
 
-A unified music production system covering four domains: (1) song mapping, (2) vocal song creation, (3) instrumental composition, and (4) album/EP architecture — all optimized for Suno AI output.
+A unified system for song mapping, vocal and instrumental composition, album/EP architecture, music-video production and YouTube release preparation for Suno music.
 
 ## Routing: What Does The User Need?
 
@@ -59,6 +59,7 @@ Read the request and route to the appropriate mode. Multiple modes can be combin
 | "Edit / replace / fix one part of this song" | **V6 EDITING** | This file §7 + `references/suno-formatting.md` |
 | "Mash up / sample / combine these songs, clips, images, or video" | **V6 MULTI-INPUT** | This file §7 |
 | "Animate this song / make a music video / add a video component" | **MUSIC VIDEO** | `references/music-video-production.md` |
+| "Animate an instrumental / make visuals follow the stems or beat" | **MUSIC VIDEO: MUSIC-DRIVEN** | `references/music-video-production.md` + `references/instrumental-video-production.md` |
 | "Write a YouTube description / channel bio / can I release this Suno track?" | **YOUTUBE RELEASE** | `references/youtube-release.md` |
 
 Always read the relevant reference files BEFORE composing. The reference files contain the deep technical detail — key-to-mood mappings, BPM ranges, structural archetypes, Suno-specific syntax, album sequencing psychology, and production descriptor libraries.
@@ -96,6 +97,8 @@ If any check fails, fix it and re-count BEFORE delivering. Do not deliver and ap
 ## Song-to-video handoff
 
 For video production from a selected song, read `references/music-video-production.md`.
+For instrumentals or per-stem animation, also read `references/instrumental-video-production.md`.
+See `docs/video-capabilities.md` for what is bundled versus project-specific.
 The accepted audio determines timing; inspect embedded lyric tracks before arranging
 transcription. Deliver a watchable pilot and support timestamped feedback before
 building the entire video. `scripts/extract-video-timing.py` provides local extraction;
@@ -489,3 +492,5 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 - **`references/music-video-production.md`** — Selected audio, embedded and word-level timing, reference-video study and design systems, procedural animation pilots, style-frame lessons, frame/range direction, deterministic rendering and export verification. Read for song-to-video production.
 
 - **`references/youtube-release.md`** — YouTube titles, video descriptions, channel bios, Suno subscription timing and commercial-use rights, AI disclosure, and release-status recording. Read when preparing a track or channel for YouTube.
+
+- **`references/instrumental-video-production.md`** — Form/phrase/beat/texture mapping, stem leakage, tempo drift, offline feature contracts, musical time and instrumental visual treatments. Read for instrumentals or music-driven animation.
