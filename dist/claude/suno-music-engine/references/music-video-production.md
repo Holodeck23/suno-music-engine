@@ -4,6 +4,10 @@ Use this mode when the user wants an animated video for an accepted song. It is 
 
 For instrumentals or detailed per-stem animation, also read `instrumental-video-production.md`. For a video that should tell a story or build a world rather than illustrate lines, read `story-world-video.md` before designing shots. For a list of bundled helpers and project-specific implementations, see `../docs/video-capabilities.md`.
 
+## Where the work lives
+
+Keep two homes and never mix them. The renderer's code goes in its own version-controlled repository (initialise it with the first file). Everything the production makes or consumes goes in one durable production folder per song: the selected audio and its hash, the song sheet, stems, analysis, timing, every render pass, contact sheets, treatment and production log. The repository links to that folder (symbolic links for the audio and analysis) rather than copying media into itself, and build output stays ignored. A render finished in any tool's own output or scratch directory is copied into the production folder's `renders/<pass-name>/` in the same turn, and the log records where it is. When a machine has its own workspace rules for these locations, they take precedence over this paragraph.
+
 ## Audio is the timing authority
 
 Keep the original audio, its SHA256, generation identifier if present, accepted lyrics and timing source in the durable production folder. Inspect codecs, duration, metadata and subtitle streams before proposing transcription or an external API. Some Suno M4A downloads contain a timed `mov_text` lyric track, even if the actual audio codec is Opus.
