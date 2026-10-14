@@ -59,3 +59,12 @@ A jointed figure of capsules (hips, spine, chest, neck, head, two-segment limbs)
 Render four or so stills across the riskiest shots first, tile them into one image, fix, and only then render the full beat board (one still per shot). Each probe takes about a minute, so the bad first draft happens where the user never sees it.
 
 Report states honestly: a beat board is stills. It does not show whether motion, sync or pacing work. Say what has and has not been seen in motion.
+
+## Renderer choice: test it on the same frame before switching
+
+Before moving a production to a heavier renderer, export the exact world and camera and render the same frame in both. One such test (1080p, Apple M5, a night city of plain box towers, about 500 signs):
+
+- Blender EEVEE at 32 samples: about 2 s per frame after shader compilation, so a three-minute film renders in hours.
+- Blender Cycles at 256 samples on the Metal GPU: about 3 minutes per frame, which is hundreds of hours for a full song. That only makes sense for stills or a few hero shots.
+- On identical box geometry, neither Blender render looked better than the browser renderer. Better light has nothing to catch on flat boxes. The step up comes from modelled assets (recessed windows, ledges, rooftop clutter, a rigged character), and those can also be loaded as glTF into a browser engine.
+- Blender-specific traps seen in that test: the AgX view transform turns saturated neon pastel (Khronos PBR Neutral or Standard keeps the hue); an area light placed just in front of a sign blows it out; world-volume haze over-scatters fast (density around 0.002 to 0.003 at city scale); depth of field at a wide aperture blurs the nearest signage text.
