@@ -17,8 +17,19 @@ Embedded Suno cues are line-level, their end times are often a flat placeholder,
 1. Separate stems (for example `demucs -n htdemucs_ft`) and use the vocal stem.
 2. Run `scripts/align-lyric-words.py TIMING.json VOCALS.wav WORDS.json`. It transcribes with word timestamps, aligns the known lyric to the heard words, accepts a match only near its own cue, and interpolates the rest. Report the matched/total count.
 3. Read the raw transcript for lines the sheet lacks: repeated ad-libs, a sung bridge, a closing repeat. Add them from transcript word times and record each addition.
-4. Whisper stretches a phrase's first word back across the preceding silence. Pull only that first word's start toward its end. Long later words are usually genuinely held notes; shifting them hides the word for most of its sung duration.
+4. Whisper stretches a phrase's first word back across the preceding silence. Pull only that first word's start toward its end. Long later words are usually genuinely held notes; shifting them hides the word for most of its sung duration. A long first word can also be held, so do not apply a blanket length rule: check the vocal stem's energy (40 ms RMS against a fixed floor) for each long first word and move its start to where the voice actually begins. On one track two of six long first words were genuinely held and a blanket rule would have hidden them.
 5. Expect the transcript to "hear" prompt lyrics over a long instrumental intro when the lyric is supplied as a prompt. The cue window is what keeps those out.
+
+## Scored events: measure each one, then mark it located or absent
+
+Suno treats bracket directions as weak hints. Silences, breaks, strips, builds, intro lengths and outro hits written into the lyric field frequently do not exist in the take, or exist somewhere else. Before designing, test each scored event against the audio and record it as located fact (start, end, evidence) or absent:
+
+- Scan the mix at 20 ms RMS for genuine dropouts; a "silence" that the mix never reaches is not a silence.
+- Tabulate per-bar RMS for each stem against the downbeats. Strips, drum dropouts and bass drops show up as one stem falling 40 dB or more for a bar while the mix barely moves.
+- Zoom (100 ms windows, beats marked) on every region the brackets describe.
+- Read the transcript for sections the sheet does not have: post-chorus ad-libs, an added hook at the top of a final chorus, a spoken bridge that keeps its drums.
+
+Then design to the located facts. An absent event is not faked with a visual: on one track the scored 2-beat silence before the final chorus did not exist, so the edit used a hard cut to clean frame on the downbeat instead, and the "stripped" bridge kept its drums, so the visual valley went to the 3 s where the band really dropped out. Novelty-based section detection can also fail outright (one 92 s block); stems plus word times gave a usable map.
 
 ## Study the reference, then set a design system
 
@@ -34,7 +45,7 @@ Lyric-driven type and music-driven motion are complementary, not alternatives. L
 
 ## Pilot before full-song production
 
-Write a brief that establishes palette, characters, props, world, focal actions and transitions. Map the opening pilot to actual cue times. Around 20-30 seconds is a useful first scope, not a universal requirement. Build something the user can watch and critique before filling the whole song. Once the user accepts the experiment or delegates the artistic choices and asks you to finish, proceed with the full film without imposing another approval round.
+Write a brief that establishes palette, characters, props, world, focal actions and transitions. Map the opening pilot to actual cue times. If the chosen pilot section is shorter than the pilot target (a 13 s chorus against a 40 s target), extend it into the neighbouring sections that show the film's arc turning, for example the pre-chorus build and the post-chorus return of the noise, rather than padding. Around 20-30 seconds is a useful first scope, not a universal requirement. Build something the user can watch and critique before filling the whole song. Once the user accepts the experiment or delegates the artistic choices and asks you to finish, proceed with the full film without imposing another approval round.
 
 Choose tools for the intended look: three.js for procedural 3D, Canvas/p5 for drawn 2D, Blender/Python when offline scene rendering is preferable. A toolkit or instruction document can help, but no particular plugin, external image model or video API is inherently required.
 
@@ -51,10 +62,20 @@ Render style frames across the pilot before any motion render; they are cheap an
 - **An additive flash before tonemapping reads as a grey frame.** Keep impact flashes short and strong.
 - **Layer order hides props.** If interface chrome sits on a layer composited above the type, an opaque dialog or darkening panel on that layer covers the words. Put opaque props on the type layer beneath the words, and erase chrome rather than painting black over it.
 - **Eased burns finish before the eye catches them.** Use linear progress for destruction effects that should be watched.
+- **Fit-to-width must know the alignment.** Measure the room a row actually has (left-aligned: right margin minus x; right-aligned: x minus left margin; centred: twice the distance to the nearer margin), not one global maximum. A renderer with only left and centre modes silently centres "right-aligned" rows on their anchor and pushes them off frame.
+- **Two rows sharing a baseline collide as soon as they fit properly.** Stack lyric rows vertically instead of pairing them left and right.
+
+Light-ground (paper) systems need their own versions of the HDR rules:
+- Skip filmic tonemapping (ACES greys the paper); roll off only values above about 0.9.
+- Push only the accent hue into HDR (for example `blue - max(red, green)`), so ink and paper never bloom.
+- Halos behind type are ground-coloured, not dark.
+- Put noise or static on the world layer under the type layer, never in the final pass over the words.
+- An impact flash or dark section is a luma-only inversion (`col + (1 - 2Y)`): paper goes black, ink goes white, and the accent keeps its hue. A full RGB negative turns a blue accent yellow and breaks the one-accent rule.
+- Small mono labels need a ground-coloured halo too; static eats them otherwise.
 
 ## Extending a pilot to the full song
 
-Write a shot table that covers every second: one shot per sung line, plus music-driven shots for instrumental stretches (intro, solo, breaks). Instrumental shots can visualise real analysis: an engine firing on drum onsets, a live stem mixer, a scrolling trace of the lead stem. Carry an arc across the film: a colour story (cold before the turn, warm after) and an ending that answers the opening. Render a style frame from every shot across the whole song, in one contact sheet, before the long render.
+Write a shot table that covers every second: one shot per sung line, plus music-driven shots for instrumental stretches (intro, solo, breaks). Make it gapless by construction (each shot runs until the next one starts) so no second can fall through to a fallback. Give each shot an optional style-frame time for shots whose idea lands at one moment (final hits, a lock-on), and let the renderer emit one frame per shot as a contact sheet. Instrumental shots can visualise real analysis: an engine firing on drum onsets, a live stem mixer, a scrolling trace of the lead stem. Carry an arc across the film: a colour story (cold before the turn, warm after) and an ending that answers the opening. Render a style frame from every shot across the whole song, in one contact sheet, before the long render.
 
 ## Make direction specific and portable
 
