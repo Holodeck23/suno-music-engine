@@ -68,3 +68,23 @@ Before moving a production to a heavier renderer, export the exact world and cam
 - Blender Cycles at 256 samples on the Metal GPU: about 3 minutes per frame, which is hundreds of hours for a full song. That only makes sense for stills or a few hero shots.
 - On identical box geometry, neither Blender render looked better than the browser renderer. Better light has nothing to catch on flat boxes. The step up comes from modelled assets (recessed windows, ledges, rooftop clutter, a rigged character), and those can also be loaded as glTF into a browser engine.
 - Blender-specific traps seen in that test: the AgX view transform turns saturated neon pastel (Khronos PBR Neutral or Standard keeps the hue); an area light placed just in front of a sign blows it out; world-volume haze over-scatters fast (density around 0.002 to 0.003 at city scale); depth of field at a wide aperture blurs the nearest signage text.
+
+## Measure the reference before polishing: pace, palette, close-ups
+
+Before an art pass, pull the reference video's frames at a fixed interval (one every five seconds, tiled) and compare them side by side with your own contact sheet. In one production this showed three gaps that no amount of polish to existing shots would have closed:
+
+- **Pace.** The reference cut every three to five seconds. The first story pass averaged about seven seconds a shot, with some running over fourteen. A cheap fix that keeps continuity: add *inserts* with an explicit `[from, to)` window over the running shot. The underlying shot keeps its own clock, so cutting back lands where the move would have been anyway. About 30 inserts took a 188-second film from 27 to about 57 cuts.
+- **Close-ups of objects, with depth of field.** The reference keeps cutting to tactile things (a mug, a phone screen, notes, a button), each with a soft background. Inserts like the monitor's text, hands on the keyboard, a lamp's bulb catching, steam off a plate, ink being written and a sign dying gave the world scale and texture that wide shots alone never did. Enable depth of field only in shots that name a focus distance.
+- **A deliberate palette.** The reference is saturated (one dominant hue, one accent, light in haze). The first pass was dark grey with coloured dots. What fixed it: haze tinted by the light sources instead of black fog, a split-tone grade (cool shadows, warm or hot highlights), a little more saturation, and lighting that has to *read*, not just exist.
+
+## Beams and other visible light
+
+- Rooftop searchlights and lasers read as "the city is shouting" better than more signs do. Put the sources on mid-height roofs at moderate elevation so the beams cross the frame; beams from the tallest roofs aimed steeply up stay above every shot.
+- Soft beam edges from the view angle need correct normals on a stretched instance: use the inverse-transpose (`M · S⁻² · n`), or a cone renders as a hard flat slab. Fade beams out within a few metres of the camera.
+- Additive light disappears on a white ground. If lasers must appear in a light world, darken the world for that section. That can itself be the story beat: the noise drags darkness back over a blank canvas, and the next downbeat cuts back to clean white.
+- Check a beam's gradient direction against the geometry's UVs with one debug frame at high intensity before tuning brightness, rather than guessing which end is which.
+
+## Characters and crowds
+
+- A rigged, animated stock character (for example the X Bot mannequin from the three.js examples, which comes from Mixamo; check the licence for your use) driven at an explicit clip time (`action.time = f(t)`, then `mixer.update(0)`) stays deterministic. Pin the hips' root motion so the story owns position. Seated, typing or leaning poses can be laid over the idle clip as per-bone local rotations, with signs found by test renders.
+- Crowds by level of detail: rigged clones (`SkeletonUtils.clone`) for the dozen or so people nearest the camera, simple silhouettes for everyone else. Capsule people look crude only up close.
