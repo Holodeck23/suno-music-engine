@@ -8,6 +8,7 @@ A cut that gives every line its own visual pun is a sequence of slides: nothing 
 
 ## Order of work: story before shot list
 
+0. **Pull the bar first.** If the user names a video or channel as the standard, download it and tile its frames (one every five seconds) before writing anything, and keep that sheet beside every beat board you show. In one production the reference frames were pulled only after a full day of building, and they showed in one glance what the build had missed: a designed subject in every frame, a saturated palette and frequent close-ups.
 1. **Treatment, one page.** Logline (one sentence: who, what they want, what changes). The world. One protagonist. The rules the film obeys. The story mapped onto the song's *measured* sections, one verb per section. Write it before any code and keep it in the production folder.
 2. **Beat board.** One still per story beat across the whole song, rendered from the real engine, not drawn. This is where the story is judged cheaply.
 3. **Animatic.** The whole song in motion, rough but in sync, scrubbable in the preview so notes are about story, not polish.
