@@ -49,6 +49,12 @@ Render style frames across the pilot before any motion render; they are cheap an
 - **Busy backgrounds kill legibility.** Put a dark halo (shadow blur) behind display type and dim the background layer during text-heavy shots.
 - **Long rows overflow.** Fit each row to a maximum width using its full eventual text, not only the words sung so far.
 - **An additive flash before tonemapping reads as a grey frame.** Keep impact flashes short and strong.
+- **Layer order hides props.** If interface chrome sits on a layer composited above the type, an opaque dialog or darkening panel on that layer covers the words. Put opaque props on the type layer beneath the words, and erase chrome rather than painting black over it.
+- **Eased burns finish before the eye catches them.** Use linear progress for destruction effects that should be watched.
+
+## Extending a pilot to the full song
+
+Write a shot table that covers every second: one shot per sung line, plus music-driven shots for instrumental stretches (intro, solo, breaks). Instrumental shots can visualise real analysis: an engine firing on drum onsets, a live stem mixer, a scrolling trace of the lead stem. Carry an arc across the film: a colour story (cold before the turn, warm after) and an ending that answers the opening. Render a style frame from every shot across the whole song, in one contact sheet, before the long render.
 
 ## Make direction specific and portable
 
