@@ -16,6 +16,7 @@ Reviewed 2026-10-14 against the canonical skill, both installed adapters and the
 | Pilot, style frames, full-song shot coverage and frame/range review | Main video guide |
 | HDR/type legibility, light-ground grading, layer order, fit-to-width and burn pacing | Main video guide |
 | GPU verification, chunked export, grain cost, large-file hashing and render identity | Main video guide |
+| Story pass: treatment, beat board, world memory as dated events, diegetic type, ALIVE systems, silhouette characters | `references/story-world-video.md` |
 | Titles, descriptions, channel bios, rights and AI disclosure | `references/youtube-release.md` |
 
 ## Helper prerequisites and limits

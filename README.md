@@ -46,6 +46,7 @@ suno-music-engine/
 │   ├── personal-context-translation.md   ← Translating a life into instrumental architecture
 │   ├── music-video-production.md         ← Audio timing, animation, rendering and verification
 │   ├── instrumental-video-production.md  ← Stems, tempo drift and music-driven animation
+│   ├── story-world-video.md              ← Story pass: a world, a character, consequences
 │   └── youtube-release.md                ← Publishing copy, commercial-use rights and AI disclosure
 ├── scripts/
 │   ├── extract-video-timing.py            ← Embedded lyric cues and audio identity

@@ -2,7 +2,7 @@
 
 Use this mode when the user wants an animated video for an accepted song. It is separate from using a video as a musical reference in Suno. Preserve the user's chosen recording and visual direction; do not regenerate the song to simplify animation.
 
-For instrumentals or detailed per-stem animation, also read `instrumental-video-production.md`. For a list of bundled helpers and project-specific implementations, see `../docs/video-capabilities.md`.
+For instrumentals or detailed per-stem animation, also read `instrumental-video-production.md`. For a video that should tell a story or build a world rather than illustrate lines, read `story-world-video.md` before designing shots. For a list of bundled helpers and project-specific implementations, see `../docs/video-capabilities.md`.
 
 ## Audio is the timing authority
 

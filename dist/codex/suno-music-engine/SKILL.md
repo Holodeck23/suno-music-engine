@@ -28,6 +28,7 @@ Read the request and route to the appropriate mode. Multiple modes can be combin
 | "Mash up / sample / combine these songs, clips, images, or video" | **V6 MULTI-INPUT** | This file §7 |
 | "Animate this song / make a music video / add a video component" | **MUSIC VIDEO** | `references/music-video-production.md` |
 | "Animate an instrumental / make visuals follow the stems or beat" | **MUSIC VIDEO: MUSIC-DRIVEN** | `references/music-video-production.md` + `references/instrumental-video-production.md` |
+| "Make the video tell a story / create a world / feel alive", or a lyric cut judged lifeless | **MUSIC VIDEO: STORY WORLD** | `references/music-video-production.md` + `references/story-world-video.md` |
 | "Write a YouTube description / channel bio / can I release this Suno track?" | **YOUTUBE RELEASE** | `references/youtube-release.md` |
 
 Always read the relevant reference files BEFORE composing. The reference files contain the deep technical detail — key-to-mood mappings, BPM ranges, structural archetypes, Suno-specific syntax, album sequencing psychology, and production descriptor libraries.
@@ -66,6 +67,8 @@ If any check fails, fix it and re-count BEFORE delivering. Do not deliver and ap
 
 For video production from a selected song, read `references/music-video-production.md`.
 For instrumentals or per-stem animation, also read `references/instrumental-video-production.md`.
+For a video that should tell a story or build a world, also read `references/story-world-video.md`:
+treatment and beat board come before any shot list.
 See `docs/video-capabilities.md` for what is bundled versus project-specific.
 The accepted audio determines timing; inspect embedded lyric tracks before arranging
 transcription. Deliver a watchable pilot and support timestamped feedback before
@@ -462,3 +465,5 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 - **`references/youtube-release.md`** — YouTube titles, video descriptions, channel bios, Suno subscription timing and commercial-use rights, AI disclosure, and release-status recording. Read when preparing a track or channel for YouTube.
 
 - **`references/instrumental-video-production.md`** — Form/phrase/beat/texture mapping, stem leakage, tempo drift, offline feature contracts, musical time and instrumental visual treatments. Read for instrumentals or music-driven animation.
+
+- **`references/story-world-video.md`** — Story pass for music videos: treatment, beat board and animatic before polish; one persistent world with memory as dated events; lyrics on surfaces in the world; an ALIVE checklist (crowd, traffic, weather, other lives, a breathing character, a camera with weight); silhouette-lit procedural characters; observed failures in grid cities, lighting, volumetrics and type. Read when the video should tell a story or a lyric cut feels lifeless.
