@@ -84,6 +84,10 @@ An observed pilot changed camera position, aim point and lens at about 4.57 seco
 
 A rushed preview can create a new fault: one assembled WIP retained only seven frames of a shot before jumping to a later excerpt. Prefer a contiguous excerpt, or cut partial excerpts at sensible shot boundaries. Label discontinuous previews and do not use their pacing as evidence about the complete edit.
 
+For a fractional cut time in a frame-sampled Blender film, the first new-shot frame is `ceil(cut_seconds * fps)`. Using `round()` can assign the cut key to the previous shot and let shutter interpolation sweep between cameras. Bake the sampled poses, keep adjacent quaternion signs consistent, and disable shutter blur around the discontinuity. Set interpolation on the actual FCurve key points: in the tested Blender build, Python-inserted keys remained Bezier despite a Linear UI preference.
+
+Audit the baked paths at fractional frames on both sides of each cut **without calling the analytic evaluator**. The evaluator can overwrite a faulty baked camera and make a broken shutter path appear correct. In the observed regression, the faulty path deviated by about 5.4 metres; explicit Linear keys and corrected cut indices reduced the audited maximum position/focus error to about 0.000058 metres. These values describe that scene, not portable acceptance tolerances. Keep the contiguous encoded motion probe as a separate visual check.
+
 ## Carry the lesson into the complete film
 
 If a viewer cannot tell what the object is doing, its name in the treatment does not solve the screen problem. Establish a recurring subject, destination or visible trigger, then show consequences across sections. A look/motion pilot can be useful without proving narrative clarity. When the user delegates completion, apply that feedback and finish within the authorized scope; do not add repeated approval rounds.
