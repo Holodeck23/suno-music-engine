@@ -53,3 +53,21 @@ Technical verification, agent aesthetic assessment and human acceptance are sepa
 Observed failed approaches included a busy procedural city with weak shot subjects, and a Blender kitchen sample with generic props, explanatory cards and an unconvincing action/payoff. More inserts, stronger colour and a renderer change did not establish reference-level quality. These are evidence about those executions, not bans on cities, kitchens, cards or procedural animation. The proposed remedy is close craft study followed by an original motion proof; label it unproven until that proof exists and is reviewed.
 
 Keep a compact production checkpoint: selected audio/hash; current render and source identity; latest user verdict; unresolved craft problem; next bounded test; render cost measured on this machine. Preserve failed samples as evidence. Avoid repeating analysis or a full render when only the manifest or one shot needs repair.
+
+## Prevent camera jumps before a long render
+
+An observed pilot changed camera position, aim point and lens at about 4.57 seconds between very similar framings. It read as a glitch. Deterministic seeking and regular 24 fps timestamps both passed; neither test detects a poorly authored transition.
+
+- Make shot boundaries and transition intent explicit. Continuous moves need continuous position, orientation, lens and focus; inspect velocity changes too. Intentional cuts can jump, but should have a readable editorial purpose.
+- Compare camera states immediately before/after every boundary. Flag near-matching views with abrupt position, focus or framing changes for review. Angle/scale thresholds are diagnostics for that production, not universal cinematography rules. Keep a regression case using the actual failed poses so the gate demonstrably catches the known mistake.
+- Render paired boundary frames and a contiguous motion probe spanning the risky transition before launching the full film. A whole-film board proves coverage, not transition quality. Check the frame before and after each worker/chunk seam too.
+- For shutter blur, an absolute-time evaluator needs shutter-time transforms. Bake or sample the relevant motion, use quaternion interpolation with consistent signs where Euler wrapping could spin the camera, and prevent blur from interpolating across hard cuts. Do not claim every moving object has blur when only camera or selected transforms were keyed.
+- Smooth fast control curves before applying them to global position/scale. Small, rapid movements can read as jitter in a macro shot. Also consider temporal sampling noise and thin-line aliasing. Constant frame cadence alone does not establish smooth imagery; assess playback when rendering is not competing for the GPU.
+
+A rushed preview can create a new fault: one assembled WIP retained only seven frames of a shot before jumping to a later excerpt. Prefer a contiguous excerpt, or cut partial excerpts at sensible shot boundaries. Label discontinuous previews and do not use their pacing as evidence about the complete edit.
+
+## Carry the lesson into the complete film
+
+If a viewer cannot tell what the object is doing, its name in the treatment does not solve the screen problem. Establish a recurring subject, destination or visible trigger, then show consequences across sections. A look/motion pilot can be useful without proving narrative clarity. When the user delegates completion, apply that feedback and finish within the authorized scope; do not add repeated approval rounds.
+
+Benchmark representative final-resolution frames after enabling the intended optics and motion settings. Separate shader warm-up from steady rendering, account for shared GPU contention, and state ETA as an estimate including encoding/review. Reuse probes only when source, audio, analysis and render settings match the final intent. Preserve the matched source snapshot and checkpoint before the expensive run.

@@ -20,6 +20,7 @@ Reviewed 2026-10-15 against the canonical skill and the Soft Parts, Rectify, Ign
 | GPU verification, chunked export, grain cost, large-file hashing and render identity | Main video guide |
 | Story treatment, boards/animatics, world memory as dated events, optional diegetic type and world systems | `references/story-world-video.md` |
 | Representative motion proofs, acting/contact risks, rejection handling and bounded iteration | Direction and quality guide |
+| Camera-boundary prevention, known-failure regression cases, shutter interpolation, contiguous preview editing and jitter diagnosis | Direction and quality guide; the camera-audit implementation is project-specific |
 | Browser/Blender comparisons, actual renderer provenance, snapshot versus animated scene | Story-world and direction guides; renderer implementations remain project-specific |
 | Titles, descriptions, channel bios, rights and AI disclosure | `references/youtube-release.md` |
 
@@ -33,7 +34,7 @@ Reviewed 2026-10-15 against the canonical skill and the Soft Parts, Rectify, Ign
 
 The skill ships production methods and the two helpers above. It is not a bundled video editor or universal renderer. Bespoke scenes, review applications, stem-analysis scripts and renderers remain in the corresponding video projects. Do not claim `scripts/analyze.py`, `scripts/prepare.sh` or `scripts/render.mjs` exists in an installed skill.
 
-The local projects inspected were under `/Users/Shared/repos/content/`: `soft-parts-video`, `rectify-video`, `ignition-syntax-video` and `all-signal-video`. These are local provenance pointers, not portable dependencies. The generalized analysis work in the latter projects has not been consolidated into the skill; copying it would require an explicit implementation review and validation, rather than treating a documentation audit as a tested code migration.
+The local projects inspected were under `/Users/Shared/repos/content/`: `soft-parts-video`, `rectify-video`, `ignition-syntax-video`, `all-signal-video` and `crumbs-in-the-kernel-video`. These are local provenance pointers, not portable dependencies. Their analysis/rendering and camera-audit implementations have not been consolidated into the skill; copying them requires implementation review and validation, rather than treating documentation coverage as a tested code migration.
 
 Song audio, stems, rendered videos, private notes and artist-specific release copy belong in durable production storage. They are not reusable skill resources and are not included in its Git repository. The renderer and archive locations can differ by machine; inspect current project configuration rather than reusing a hardcoded personal path.
 
@@ -44,6 +45,8 @@ The latest review distinguished a liked Ignition Syntax pilot from unverified ac
 All Signal full-v2 used three.js/browser rendering; its Blender comparisons were still tests. The later kitchen sample actually rendered in Blender EEVEE and passed technical export checks, but the user explicitly rejected it as cheap and unimpressive. A renderer switch, extra inserts, saturated lighting and a treatment did not close the creative gap. Preserve those outcomes in the production records; do not promote the kitchen code to a reusable production baseline.
 
 The next proposed craft step is close study of a strong reference sequence followed by an original, representative motion shot. That step has not yet demonstrated a reference-level result. This skill captures the procedure and failed attempts honestly; it does not claim the missing artistic knowledge has already been acquired.
+
+Crumbs in the Kernel later produced a technically verified 20-second Cycles pilot. The user judged it better, with room for improvement, identified a camera jump and asked what was happening. That supports continuing the direction, not claiming a finished or accepted film. Full-film work added a visible recurring fragment, camera-boundary checks with the actual failed poses as a regression case, smoothed controls and shutter-time camera keys. Its complete-film outcome remains pending until export and review; shader/renderer benchmarks do not establish artistic success.
 
 ## Maintenance check
 

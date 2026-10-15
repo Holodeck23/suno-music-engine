@@ -61,6 +61,8 @@ Evaluate every frame from absolute audio time. Avoid accumulated simulation stat
 
 Contact sheets catch framing and composition; motion playback catches unreadable actions, accidental freezes, bad cuts and synchronization. Use both. A passed build or attractive still image does not establish that the video works at playback speed.
 
+Before a long render, audit camera states at shot/chunk boundaries and test risky transitions in a contiguous motion probe. Keep a regression case for any observed camera jump. See `video-direction-and-quality.md` for boundary checks, shutter-time interpolation, global-control jitter and partial-preview pitfalls.
+
 Use style frames to catch framing and surface problems cheaply, then test motion early enough to expose weak acting, contact and transitions. Problems observed on the first style pass of an HDR pipeline, with local technical fixes:
 
 - **Bloom swallows the type.** Push only accent-coloured pixels into HDR, set the bloom threshold at true overexposure (1.0), and keep white and neutral type below it.
