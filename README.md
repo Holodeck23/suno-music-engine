@@ -1,14 +1,13 @@
 # YouTube Lesson Engine
 
-A platform-agnostic Agent Skill that turns AI and tech lessons, AI releases, news and GitHub architectures into high-retention, faceless YouTube videos scored with custom Suno background music and music-video-grade visuals. The portable definition builds adapters for Claude Code and OpenAI Codex and covers the full pipeline:
+A platform-agnostic Agent Skill that turns AI and tech lessons, AI releases, news and GitHub architectures into high-retention, faceless YouTube videos scored with custom Suno background music and music-video-grade visuals. The portable definition builds adapters for Claude Code and OpenAI Codex and orchestrates six steps:
 
-1. **Research** — Primary sources first. Read and run the repository, date-stamp perishable claims, and label inference
-2. **Script** — The Dave Dark structure: a 15-second Hook with zero fluff, 3–4 Mechanism blocks, real Proof, a high-signal Verdict
-3. **Manifest** — Compile the script into a strict `lesson-manifest.json` and validate it before production
-4. **BGM Scoring** — Loopable instrumental Suno beds (dark synthwave, prog-metal/electronic, post-rock, 85–126 BPM) that leave the voice its 300 Hz–3 kHz band
-5. **Narration Timing** — TTS audio as the timing authority, with word-level triggers for code and diagram reveals
-6. **Visuals** — Code, architecture and vibe states built on tested rendering, legibility, determinism and export-verification lessons
-7. **Mix and Release** — Ducking, loudness, YouTube copy, Suno commercial-use rights and AI disclosure
+1. **Topic → manifest** — Research primary sources, write in the Dave Dark structure (a 15-second Hook with zero fluff, 3–4 Mechanism blocks, real Proof, a high-signal Verdict) and compile a validated `lesson-manifest.json`
+2. **BGM** — Loopable instrumental Suno beds (dark synthwave, prog-metal/electronic, post-rock, 85–126 BPM) that leave the voice its 300 Hz–3 kHz band
+3. **Voice and timing** — ElevenLabs narration with word timestamps, or a local voiceover aligned with Whisper; BGM beats and the hook-drop offset merged into one resolved timeline
+4. **Mix** — Timeline-driven ducking that never pumps between words, a vocal pocket, −14 LUFS mastering
+5. **Render and verify** — Four programmatic visual states (`vibe_drop`, `code_focus`, `architecture_graph`, `artifact_pan`) on tested rendering, determinism, legibility and export-verification lessons
+6. **Package** — Curiosity-gap titles, three-word thumbnails, chapters from the timeline, pinned comments, Suno rights and AI disclosure
 
 This engine grew out of `suno-music-engine`. It keeps the instrumental Suno knowledge and every video-production lesson. The vocal songwriting, album and personal-translation modes were retired; they remain in the `main` branch history.
 
@@ -17,11 +16,23 @@ This engine grew out of `suno-music-engine`. It keeps the instrumental Suno know
 ## Quick start
 
 ```bash
-# Validate a lesson manifest (Python 3.8+, standard library only)
-python3 scripts/validate-lesson-manifest.py references/lesson-manifest.example.json --strict
+# 1. Validate the manifest (Python 3.8+, standard library only)
+python3 scripts/validate-lesson-manifest.py lesson-manifest.json --strict
+
+# 3. Narrate and compile the timeline (or --provider local-audio --audio-file voiceover.wav)
+ELEVENLABS_API_KEY=... python3 scripts/generate-tts-and-cues.py lesson-manifest.json \
+    --out-dir build --provider elevenlabs
+
+#    Merge the bed's beats; rerun with the suggested --bgm-offset to land the hook drop on a downbeat
+uv run --python 3.12 --with librosa python scripts/extract-video-timing.py bgm.wav build/bgm-timing.json \
+    --beats --merge-into build/resolved-timeline.json
+
+# 4. Mix and master
+python3 scripts/mix-voice-and-bgm.py build/master-narration.wav bgm.wav \
+    build/resolved-timeline.json build/master-audio.wav
 ```
 
-The example is a complete 3-minute lesson on Git's object database, with real terminal output in its Proof segments.
+Requires FFmpeg and FFprobe on PATH. `references/lesson-manifest.example.json` is a complete 3-minute lesson on Git's object database, with real terminal output in its Proof segments.
 
 ## Install with Polyskill
 
@@ -42,22 +53,23 @@ Copy `USER-CONCEPTS.template.md` to `USER-CONCEPTS.md` inside the installed skil
 
 ```
 youtube-lesson-engine/
-├── definition.md                          ← Portable source of truth
+├── definition.md                          ← Portable source of truth: the six-step orchestrator
 ├── polyskill.yaml                         ← Claude and Codex build targets
 ├── README.md                              ← This file
 ├── USER-CONCEPTS.template.md              ← Template for a private channel profile
 ├── references/
-│   ├── script-and-retention-engine.md     ← Dave Dark structure, retention, TTS writing, manifest contract
+│   ├── script-and-retention-engine.md     ← Dave Dark structure, retention, TTS writing, manifest contract, timeline
 │   ├── lesson-manifest.schema.json        ← Machine-readable manifest schema
 │   ├── lesson-manifest.example.json       ← Complete valid example lesson
-│   ├── bgm-suno-scoring.md                ← Instrumental Suno beds, loops, voice pocket, ducking, loudness
-│   ├── music-video-production.md          ← Timing, design systems, rendering, verification, world-building lessons
-│   ├── instrumental-video-production.md   ← Stems, tempo drift and music-driven animation
-│   ├── video-direction-and-quality.md     ← Reference craft, motion proofs, quality resets, camera jumps
-│   └── youtube-release.md                 ← Publishing copy, commercial-use rights and AI disclosure
+│   ├── bgm-suno-scoring.md                ← Instrumental Suno beds, loops, voice pocket, mixer levels
+│   ├── visual-lesson-production.md        ← Four visual states + every timing, rendering and world-building lesson
+│   ├── video-direction-and-quality.md     ← Mobile legibility, reference craft, motion proofs, camera jumps
+│   └── youtube-release.md                 ← Titles, thumbnails, chapters, pinned comments, rights, AI disclosure
 ├── scripts/
 │   ├── validate-lesson-manifest.py         ← Schema + Dave Dark structure validator
-│   ├── extract-video-timing.py             ← Embedded cues and audio identity
+│   ├── generate-tts-and-cues.py            ← ElevenLabs / local narration → master-narration.wav + resolved-timeline.json
+│   ├── extract-video-timing.py             ← Embedded cues, audio identity; --beats for BGM beats and the drop offset
+│   ├── mix-voice-and-bgm.py                ← Timeline-driven ducking and mastering → master-audio.wav
 │   └── align-lyric-words.py                ← Whisper word alignment (lyrics or narration)
 ├── docs/
 │   ├── video-capabilities.md              ← Coverage and implementation inventory
@@ -85,6 +97,7 @@ Lesson media (narration, BGM takes, renders) belongs in a durable production fol
 - "Write a Dave Dark hook for the new model release, no fluff"
 - "Validate my lesson-manifest.json and fix the trigger words"
 - "Give me a dark synthwave loop bed at 104 BPM that sits under narration"
-- "Duck the bed under my narration and master to −14 LUFS"
+- "Narrate this manifest with my ElevenLabs voice and mix it under the synthwave bed"
+- "Align my recorded voiceover to the manifest and give me the chapters"
 - "Pilot the hook and first mechanism block as a rendered video"
-- "Write the YouTube title and description, and tell me what to disclose"
+- "Write the title, thumbnail brief, description and pinned comment, and tell me what to disclose"

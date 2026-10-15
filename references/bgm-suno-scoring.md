@@ -2,7 +2,7 @@
 
 Prompt and post-production reference for the background music in a lesson video. The output is always instrumental: a Suno style prompt plus a lyrics field that contains only bracketed metatags. Vocal songwriting is out of scope for this engine. Official Suno capabilities are kept separate from field-tested heuristics, and anything not yet auditioned is labelled as a proposal.
 
-Read `script-and-retention-engine.md` for the segment timeline the bed has to serve (`bgm_mode`, the hook drop). Read `instrumental-video-production.md` for beat, tempo-drift and stem-analysis lessons. Read `youtube-release.md` before publishing for Suno commercial-use rights.
+Read `script-and-retention-engine.md` for the segment timeline the bed has to serve (`bgm_mode`, the hook drop). Read `visual-lesson-production.md` (Part 3) for beat, tempo-drift and stem-analysis lessons. Read `youtube-release.md` before publishing for Suno commercial-use rights.
 
 ## Table of Contents
 1. What a Narration Bed Has to Do
@@ -257,11 +257,13 @@ Suno released the v6 family on 2026-09-09 and retired all earlier generation mod
 
 ## 12. From Selected Take to Loopable, Voice-Safe Stem
 
+**The production path is three scripts.** `scripts/extract-video-timing.py --beats --merge-into` measures the bed's beats and downbeats and suggests the hook-drop offset. `scripts/mix-voice-and-bgm.py` then builds the whole mix from the timeline: an 80 Hz high-passed, presence-lifted voice at −14 LUFS; the bed at −18 dB with a −3 dB pocket at 1.5 kHz under speech, rising to −2 dB only in transitions, the intro and the outro; and a −14 LUFS / −1 dBTP master. The manual FFmpeg recipes below remain for one-off fixes and for understanding what the mixer does.
+
 All commands below were run against synthetic test audio with FFmpeg 6.1. The numbers are **starting points to audition**, not mastering rules.
 
 ### Preserve and measure
 1. Keep the selected take's original file, its SHA256 and the Suno song ID in the lesson's production folder. Never loop or mix from a lossy re-encode of a re-encode.
-2. Measure the actual duration and a beat/downbeat grid (Beat This! or librosa). **Do not trust the prompt BPM.** One take drifted from about 129 to 132 BPM, and a grid at the requested 128 BPM matched only 29% of measured kicks (`instrumental-video-production.md`).
+2. Measure the actual duration and a beat/downbeat grid (Beat This! or librosa). **Do not trust the prompt BPM.** One take drifted from about 129 to 132 BPM, and a grid at the requested 128 BPM matched only 29% of measured kicks (`visual-lesson-production.md`, Part 3).
 3. Record each scored event (intro end, drop, hard stop) as **located** (time and evidence) or **absent**. A drop that does not exist is not faked: cut hard to the visual drop on a measured downbeat instead.
 
 ### Cut a loop on downbeats
@@ -279,8 +281,8 @@ ffmpeg -i bed.wav -af "equalizer=f=950:t=o:w=3.3:g=-4" bed_eq.wav
 ```
 If one stem (lead synth, distorted guitar) still masks the voice, attenuate that stem before the EQ rather than deepening the cut.
 
-### Duck under the narration
-`sidechaincompress` **stops when its key input ends**. In testing, an unpadded 12 s narration key truncated a 20 s bed to 12 s. Pad the key with `apad`.
+### Duck under the narration (manual fallback)
+A sidechain compressor reacts to the voice itself, so the bed **pumps up in every pause between words**: acceptable for a quick check, wrong for a lesson. `mix-voice-and-bgm.py` ducks from the timeline instead, holding the bed down for whole stretches of speech. If you do use a sidechain, note that `sidechaincompress` **stops when its key input ends**. In testing, an unpadded 12 s narration key truncated a 20 s bed to 12 s. Pad the key with `apad`.
 ```bash
 ffmpeg -i bed_eq.wav -i narration.wav -filter_complex \
  "[1:a]aformat=channel_layouts=stereo,apad,asplit=2[key][voice]; \
@@ -295,7 +297,7 @@ Segment boundaries come from the rendered TTS timeline (`script-and-retention-en
 ```bash
 ffmpeg -i bed.wav -af "volume='1-(1-pow(10,-12/20))*min(1,max(0,min((t-3)/0.4,(9-t)/0.4)))':eval=frame" bed_auto.wav
 ```
-Generate one such term per `ducked` span from the manifest timeline. `full_swell` spans stay at unity, and the sidechain still protects any words inside them. Land ramps on downbeats where the timeline allows.
+`mix-voice-and-bgm.py` generates this envelope for the whole lesson from `resolved-timeline.json`, as one flat sum of gated linear segments (FFmpeg's expression parser limits nesting depth, so it avoids nested `if()` calls). It runs the gain on 256-sample frames so the ramps stay smooth, and crossfades a dipped and an undipped copy of the bed so the 1.5 kHz pocket applies only while ducked.
 
 ### Hit the loudness target
 YouTube turns loud uploads down toward a reference near −14 LUFS. That figure is widely measured, not an official specification. Master the final mix to **−14 LUFS integrated, true peak at or below −1 dBTP**. Single-pass `loudnorm` missed its −14 target by 1.9 LU on the test mix, while measuring with `ebur128` and applying linear gain landed at −14.0:
@@ -307,7 +309,7 @@ ffmpeg -nostats -i master.wav -af ebur128=peak=true -f null -   # verify I and t
 If the true peak exceeds −1 dBTP after the gain, add `alimiter`, then measure again. As a starting balance, sit the ducked bed roughly 10–15 LU below the narration's short-term loudness and adjust by ear on the actual voice.
 
 ### Aligning the hook drop
-Let `D` be the measured drop downbeat in the hook-intro stem, and `H` the timeline time where the hook narration plus its pause ends (the drop moment, at most 12 s, so that the 3 s drop finishes by 0:15). Offset the stem by `D − H`: trim that much from its head when positive. When negative, the stem's build is too short. Pick another take or extend the intro rather than starting the lesson on silence. The visual drop is scheduled at `H` and lasts 3.0 s.
+Let `D` be the measured drop downbeat in the hook-intro stem, and `H` the timeline time where the hook narration ends (the drop moment, at most 12 s, so that the 3 s drop finishes by 0:15). Offset the stem by `D − H`: trim that much from its head when positive. `extract-video-timing.py --merge-into` computes this as `bgm.hookDrop.suggestedOffset`, preferring a downbeat after `H` so the build still plays under the hook, and the mixer reads the merged offset. When negative, the stem's build is too short. Pick another take or extend the intro rather than starting the lesson on silence. The visual drop is scheduled at `H` and lasts 3.0 s.
 
 ---
 

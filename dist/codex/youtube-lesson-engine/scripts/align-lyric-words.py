@@ -6,6 +6,8 @@ recording (over 20 s late in the song in one observed case). Kinetic type needs 
 This transcribes an isolated vocal stem with word timestamps, then aligns the KNOWN lyric
 (from extract-video-timing.py output, never the transcript's spelling) onto the heard words.
 Words that cannot be matched are interpolated inside their line and marked "interp".
+generate-tts-and-cues.py reuses norm(), transcribe(), heard_words() and matched_pairs()
+to align lesson narration the same way.
 
 Usage:
   uv run --python 3.12 --with mlx-whisper python align-lyric-words.py \
@@ -15,7 +17,8 @@ TIMING.json: output of extract-video-timing.py (uses its "lyrics" cues).
 VOCALS.wav:  an isolated vocal stem (e.g. demucs htdemucs_ft). The full mix works worse.
 Writes OUTPUT.json plus OUTPUT.raw.json (the raw transcript, reused on reruns).
 Refuses to overwrite OUTPUT.json without --force. Runs locally; uploads nothing.
-On non-Apple hardware, substitute any Whisper build that returns word timestamps.
+Uses mlx-whisper on Apple silicon; elsewhere run with `--with faster-whisper` instead, which
+maps the model name to its faster-whisper equivalent (large-v3-turbo by default).
 """
 from __future__ import annotations
 
@@ -26,9 +29,51 @@ import re
 import sys
 from pathlib import Path
 
+DEFAULT_MODEL = "mlx-community/whisper-large-v3-turbo"
+
 
 def norm(w: str) -> str:
     return re.sub(r"[^a-z0-9]", "", w.lower().replace("’", "'"))
+
+
+def transcribe(audio: Path, model: str, prompt: str, language: str = "en") -> dict:
+    """Whisper word timestamps as {"segments": [{"words": [{"word", "start", "end"}]}]}."""
+    try:
+        import mlx_whisper
+    except ImportError:
+        mlx_whisper = None
+    if mlx_whisper is not None:
+        return mlx_whisper.transcribe(
+            str(audio), path_or_hf_repo=model, word_timestamps=True,
+            initial_prompt=prompt, language=language,
+            condition_on_previous_text=False,
+        )
+    try:
+        from faster_whisper import WhisperModel
+    except ImportError:
+        raise SystemExit("transcription needs mlx-whisper (Apple silicon) or faster-whisper, e.g. "
+                         "uv run --python 3.12 --with faster-whisper python ...")
+    name = model.rsplit("/", 1)[-1]
+    name = name[len("whisper-"):] if name.startswith("whisper-") else name
+    segments, _ = WhisperModel(name).transcribe(
+        str(audio), word_timestamps=True, initial_prompt=prompt, language=language,
+        condition_on_previous_text=False,
+    )
+    return {"segments": [{"text": s.text, "words": [{"word": w.word, "start": w.start, "end": w.end}
+                                                    for w in s.words or []]} for s in segments]}
+
+
+def heard_words(raw: dict) -> list[dict]:
+    return [{"n": norm(w["word"]), "start": float(w["start"]), "end": float(w["end"])}
+            for seg in raw["segments"] for w in seg.get("words", []) if norm(w["word"])]
+
+
+def matched_pairs(known: list[str], heard: list[str]):
+    """Yield (known index, heard index) for each word difflib aligns, in order."""
+    sm = difflib.SequenceMatcher(a=known, b=heard, autojunk=False)
+    for blk in sm.get_matching_blocks():
+        for i in range(blk.size):
+            yield blk.a + i, blk.b + i
 
 
 def main() -> int:
@@ -38,7 +83,7 @@ def main() -> int:
     ap.add_argument("output", type=Path)
     ap.add_argument("--window", type=float, default=30.0,
                     help="seconds after a Suno cue in which a heard word may match it")
-    ap.add_argument("--model", default="mlx-community/whisper-large-v3-turbo")
+    ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--force", action="store_true")
     a = ap.parse_args()
 
@@ -54,27 +99,19 @@ def main() -> int:
     if raw_path.exists():
         raw = json.loads(raw_path.read_text())
     else:
-        import mlx_whisper
-        raw = mlx_whisper.transcribe(
-            str(a.vocals), path_or_hf_repo=a.model, word_timestamps=True,
-            initial_prompt=" ".join(c["text"] for c in cues), language="en",
-            condition_on_previous_text=False,
-        )
+        raw = transcribe(a.vocals, a.model, " ".join(c["text"] for c in cues))
         raw_path.write_text(json.dumps(raw, indent=1, default=float))
 
-    heard = [{"n": norm(w["word"]), "start": float(w["start"]), "end": float(w["end"])}
-             for seg in raw["segments"] for w in seg.get("words", []) if norm(w["word"])]
+    heard = heard_words(raw)
     known = [{"w": tok, "n": norm(tok), "line": li}
              for li, c in enumerate(cues) for tok in c["text"].split() if norm(tok)]
 
-    sm = difflib.SequenceMatcher(a=[k["n"] for k in known], b=[h["n"] for h in heard], autojunk=False)
-    for blk in sm.get_matching_blocks():
-        for i in range(blk.size):
-            k, h = known[blk.a + i], heard[blk.b + i]
-            # The prompt can make Whisper "hear" later lyrics over an instrumental intro, and
-            # repeated choruses invite cross-matches. Only accept words near their own cue.
-            if cues[k["line"]]["start"] - 3.0 <= h["start"] <= cues[k["line"]]["start"] + a.window:
-                k.update(start=h["start"], end=h["end"], src="whisper")
+    for ki, hi in matched_pairs([k["n"] for k in known], [h["n"] for h in heard]):
+        k, h = known[ki], heard[hi]
+        # The prompt can make Whisper "hear" later lyrics over an instrumental intro, and
+        # repeated choruses invite cross-matches. Only accept words near their own cue.
+        if cues[k["line"]]["start"] - 3.0 <= h["start"] <= cues[k["line"]]["start"] + a.window:
+            k.update(start=h["start"], end=h["end"], src="whisper")
 
     lines = []
     for li, c in enumerate(cues):

@@ -4,7 +4,8 @@
 Field names, enums and patterns come from references/lesson-manifest.schema.json, the single
 source of truth for structure. This script adds the rules a JSON Schema cannot express:
 segment numbering and phase order, 3-4 Mechanism blocks, the 15-second hook budget, filler
-openers, trigger words that must occur in the narration, and trigger targets that must exist.
+openers, trigger words that must occur in the narration, trigger targets that must exist, and
+the 45-column limit on code lines that keeps them legible on a phone.
 
 Usage:
   python3 validate-lesson-manifest.py lesson-manifest.json [--wpm 150] [--strict] [--json]
@@ -18,6 +19,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import signal
 import sys
 from pathlib import Path
 
@@ -26,6 +28,7 @@ PHASES = ("hook", "mechanism", "proof", "verdict")
 HOOK_SECONDS, DROP_SECONDS = 15.0, 3.0
 MIN_MINUTES, MAX_MINUTES = 3.0, 6.0
 MAX_SECONDS_PER_VISUAL_BEAT = 40.0
+MAX_CODE_COLUMNS, TAB_WIDTH = 45, 4
 FILLER = re.compile(r"^\W*(hey|hi|hello|yo|what'?s up|welcome|in (this|today'?s) video|today,? (we|i)\b"
                     r"|so,? today|before we (start|begin|get started))", re.I)
 TTS_HAZARDS = re.compile(r"[`{}<>_\\|]|https?://")
@@ -115,6 +118,10 @@ def check(manifest: dict, wpm: float):
             err("code_focus needs visual_payload.code_snippet")
         if state == "architecture_graph" and not nodes:
             err("architecture_graph needs visual_payload.diagram_nodes")
+        for n_line, line in enumerate((code or "").splitlines(), 1):
+            if len(line.expandtabs(TAB_WIDTH)) > MAX_CODE_COLUMNS:
+                err(f"code line {n_line} is {len(line.expandtabs(TAB_WIDTH))} columns; the limit is "
+                    f"{MAX_CODE_COLUMNS} (tabs count as {TAB_WIDTH}) so it stays legible on a phone")
         for entry in nodes or []:
             if "->" in entry and not all(part.strip() for part in entry.split("->")):
                 err(f"diagram entry '{entry}' has an empty node around '->'")
@@ -229,4 +236,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    if hasattr(signal, "SIGPIPE"):  # exit quietly when piped into head and the like
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     sys.exit(main())

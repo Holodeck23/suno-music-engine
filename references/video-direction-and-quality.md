@@ -1,6 +1,24 @@
 # Music-video direction, reference craft and quality resets
 
-Read for an ambitious reference-led video, a rejected draft, or developing a song and film together. Pair with `music-video-production.md` for timing/export and its narrative-continuity section when narrative continuity matters. These are decision aids, not a house style or a promise of reference-level quality.
+Read for an ambitious reference-led video, a rejected draft, or developing a song and film together. Pair with `visual-lesson-production.md` for timing, rendering and export, and its Part 4 when narrative continuity matters. These are decision aids, not a house style or a promise of reference-level quality.
+
+## Mobile legibility for lessons
+
+Most viewers watch on a phone. Lesson text is information, not decoration, so these are hard rules for every frame, not style preferences. Sizes are font sizes on a 1920×1080 frame; scale them proportionally for other resolutions.
+
+| Element | Minimum size at 1080p | Notes |
+|---|---|---|
+| Headline / display type | 80 px | Three to six words; one line where possible |
+| Body overlay and captions | 48 px | Never more than two lines at once |
+| Code and terminal text | 40 px | 45 columns × 0.6 em × 40 px ≈ 1,080 px wide, which fits with margins |
+| Diagram node labels | 40 px | Abbreviate the label rather than shrinking it |
+| Small mono chrome (file names, timestamps) | 28 px | Decoration only; never the only carrier of essential information |
+
+- **At most 45 characters per code line.** `scripts/validate-lesson-manifest.py` rejects longer lines (tabs count as 4 columns). Shorten commands, use `--abbrev` or short hashes, or split the line; do not shrink the font.
+- **Contrast:** text should reach at least 4.5:1 against the pixels directly behind it (the WCAG AA ratio). Use a halo or a dim panel over busy backgrounds.
+- **A visual state change or camera motion at least every 6–8 seconds.** `resolved-timeline.json` guarantees it structurally: wherever no slot change or trigger occurs for more than 7 s, it inserts a `camera_move` event, and the renderer must honour each one with a visible, eased move. Check the export with `freezedetect` (`visual-lesson-production.md`, Part 1).
+- **Test at phone scale.** Downscale representative frames to 844×475, a phone held landscape, and confirm that every essential word and code line is still readable. A frame that only works at full resolution fails.
+- **Safe areas:** keep essential text inside the central 90% of the frame. If you add YouTube end-screen elements (they occupy the last 5–20 seconds), keep that stretch free of essential text.
 
 ## Recover the meaning before choosing the metaphor
 

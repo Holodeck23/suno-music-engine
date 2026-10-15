@@ -1,3 +1,6 @@
+# Builds the youtube-lesson-engine skill (formerly suno-music-engine).
+# Polyskill reads the skill's name and description from definition.md (identity.name,
+# identity.description); this file only lists the adapter targets.
 version: 1
 targets:
   - adapter: claude

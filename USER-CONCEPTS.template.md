@@ -24,7 +24,7 @@ Delete any sections you don't need. Add new ones freely.
 - **Channel name:**
 - **Audience** (who, and what they already know):
 - **Promise** (what a viewer gets from every lesson):
-- **Voice ID and settings** (the TTS voice, speed, stability):
+- **Voice ID and settings** (the ElevenLabs voice ID, model, and `--voice-settings` JSON such as stability, similarity_boost and speed):
 - **Visual system** (ground colour, one accent colour, display face, monospace face):
 - **Words and phrases we never use:**
 
@@ -46,7 +46,7 @@ Delete any sections you don't need. Add new ones freely.
 - **Master style prompt** (the DNA all beds derive from):
 - **Keys and BPM range in use:**
 - **Hero bed** (Suno song ID and production-folder path of the reference bed):
-- **Mix settings that worked** (EQ pocket depth, ducked gain, sidechain threshold):
+- **Mix settings that worked** (`mix-voice-and-bgm.py` flags: `--duck-db`, `--swell-db`, `--pocket-db`, ramps):
 
 ---
 

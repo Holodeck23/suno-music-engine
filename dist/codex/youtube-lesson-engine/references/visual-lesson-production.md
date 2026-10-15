@@ -1,25 +1,79 @@
-# From a selected song to a code-driven music video
+# Visual Lesson Production: Programmatic Visuals for Narrated Lessons
+
+This guide merges and replaces the former music-video and instrumental-video guides. Part 1 is the lesson renderer: four visual states driven by `lesson-manifest.json` and `resolved-timeline.json`. Parts 2–4 keep every timing, design, rendering and verification lesson from the music-video productions, unchanged. When applying them to a lesson, read "song", "lyrics" and "selected audio" as "lesson", "narration" and "the rendered narration plus the selected BGM take".
+
+Read `video-direction-and-quality.md` for reference craft, quality resets, camera-jump prevention and the mobile-legibility rules. Read `script-and-retention-engine.md` for the manifest and `bgm-suno-scoring.md` for the bed. For bundled helpers and project-specific implementations, see `../docs/video-capabilities.md`.
+
+## Part 1: The Lesson Renderer
+
+### Inputs and the render contract
+
+| Input | Producer | Used for |
+|---|---|---|
+| `lesson-manifest.json` | The script (validated) | Payloads: headline, code, diagram entries, trigger actions |
+| `resolved-timeline.json` | `scripts/generate-tts-and-cues.py` | Gapless `slots`, word and trigger times, `transitions`, `camera_move` events, `chapters` |
+| Its `bgm` block | `scripts/extract-video-timing.py --merge-into` | Beats, estimated downbeats, onsets, absolute dBFS envelopes (per stem too), the hook-drop alignment |
+| `master-audio.wav` | `scripts/mix-voice-and-bgm.py` | The only audio muxed into the export |
+| `artifacts/<segment id>.png` + `.json` | Captured in the production folder | `artifact_pan` images and their highlight regions |
+
+- **Every frame is a pure function of absolute time.** At time `t` the renderer looks up the active slot, every trigger at or before `t`, the camera moves around `t`, and the bed's envelope and beats at `t`. It keeps no accumulated state, so seeking away and back reproduces the frame and chunks can render in any order (Part 2, "Pilot before full-song production").
+- **Lock the frame rate.** Choose one fixed rate for the whole lesson (24, 30 or 60 fps) and evaluate frame `n` at exactly `n / fps`. Never advance time by measured frame durations.
+- **Never re-time.** Triggers fire at their word's start time, slots change at their start, and camera moves begin at their event time. The word-count estimates in the manifest validator are for planning only; the timeline comes from the rendered narration.
+- **Slots are gapless.** Segment slots alternate with transition slots (`intro`, `drop`, `swell`, `outro`), and every second of the lesson belongs to exactly one slot, so no second falls through to an accidental fallback.
+- **One design system.** One dark ground, one accent colour, a display face plus a monospace face, consistent framing chrome. The accent can carry the arc. The HDR, halo, fit-to-width and layer-order rules in Part 2 apply to code and diagram type as they do to lyrics.
+- **Mobile legibility is a hard requirement.** Minimum text sizes, the 45-column code limit and the 6–8 second change rule are in `video-direction-and-quality.md`. The timeline already inserts a `camera_move` event wherever nothing else would change for more than 7 s.
+
+### State 1: `vibe_drop`
+
+A full-screen, audio-reactive visualizer or shader driven by the Suno bed.
+
+- **Used for:** the transition slots (intro, the hook drop, swells before the Verdict, the outro), typically 3–5 seconds, and `vibe_drop` segments (the Hook, usually the Verdict).
+- **Driven by measured audio:** `bgm.envelope.dbfs` and the per-stem envelopes for intensity, mass and colour; `bgm.beats` for pulses; `bgm.downbeats` for larger accents. Map dBFS through a fixed floor, never per-track percentile scaling, so an absent instrument stays dark (Part 3, "Offline analysis contract"). Downbeats are estimates; check them against playback.
+- **The hook drop:** the impact lands at the `drop` transition's start, which `extract-video-timing.py` aligns to a measured downbeat (`bgm.hookDrop`), and lasts until `drop_end` (3 s). A `drop` trigger adds another impact inside a `vibe_drop` segment. Keep impact flashes short and strong; an additive flash before tonemapping reads as a grey frame (Part 2).
+- **With narration over it:** show the headline (at its `show_headline` trigger, or at segment start) with a dark halo, and dim the visualizer while text is on screen.
+
+### State 2: `code_focus`
+
+- **Background:** the same visualizer keeps running underneath at **15–20% opacity**, so the music still has a visible pulse but never competes with the code.
+- **Foreground:** dark-mode, syntax-highlighted code or terminal output in the monospace face. Use a fixed highlighting theme so every render tokenises identically. In terminal blocks, distinguish the `$` command lines from their output.
+- **Reveal on the word:** `reveal_line_<n>` shows lines 1 through `n` at the trigger word's start time. `highlight_line_<n>` moves the accent bar to line `n`. A snippet with no reveal triggers is fully visible from the start of the segment. A typing animation is optional, but each line must finish within about 0.3 s of its word so the reveal never lags the narration.
+- **Fit:** the validator rejects code lines over 45 columns (tabs count as 4). Size the block so its longest line fits the frame at or above the minimum code size; never scroll a line off a phone screen.
+
+### State 3: `architecture_graph`
+
+- **Graph:** `diagram_nodes` entries are node labels or chains (`A -> B -> C`). Merge them into one graph by label. Compute the layout once per segment and deterministically: a layered left-to-right layout in chain order, or a seeded force layout. Never lay it out per frame.
+- **Reveal and activity:** `reveal_node_<n>` brings in entry `n` and its edges on the word. `highlight_node_<n>` makes those components active: they glow in the accent colour and pulse on `bgm.beats`, while inactive components dim. The spoken trigger decides *what* is active; the beat only decides *how* it pulses.
+- **Flow:** animate edge direction as a function of absolute time (dash offset = speed × t). Push only accent pixels into HDR, so labels never bloom (Part 2).
+
+### State 4: `artifact_pan`
+
+- **Artifact:** a clean, dark-mode viewport framing a real artifact: a repository README, a release note, a paper figure, a benchmark chart. Store the capture as `artifacts/<segment id>.png` in the production folder. Record its source URL and capture date in `artifacts/<segment id>.json`. Show real artifacts only; never mock up a benchmark, chart or release note.
+- **Regions:** in an `artifact_pan` segment, `diagram_nodes` lists the artifact's named regions in order. Their boxes live in the sidecar as `"regions": [{"box": [x, y, w, h]}]`, in 0–1 image coordinates, in the same order. `reveal_node_<n>` zooms to region `n`; `highlight_node_<n>` draws the accent box around it and dims the rest. The validator then keeps every region index in range.
+- **Motion:** a slow programmatic pan and zoom, eased on absolute time, moving between regions on their trigger words. Zoom until the highlighted text meets the mobile minimum size; text inside screenshots rarely does at full frame.
+
+### Transitions and camera moves
+
+- Cut or morph at slot boundaries. Every boundary gets the camera-state comparison and paired-frame checks in `video-direction-and-quality.md`; near-matching views with abrupt changes read as glitches.
+- A `camera_move` event starts a gentle, continuous move: a slow push-in, a lateral drift or a re-frame, eased over 1–2 seconds. It never jumps. Smooth fast control curves before applying them to global position or scale.
+- Motion intensity follows `bgm_mode`. In `ducked` segments motion stays calm so the explanation leads; in `vibe_drop` slots the bed drives light, camera weight and impacts (Part 3).
+
+### Pilot, review and export for a lesson
+
+1. **Pilot** the Hook, the drop and the first Mechanism block at full quality with the mixed `master-audio.wav`. Review a contact sheet and real-time playback, and check that every reveal lands on its word.
+2. **Expand** to the full lesson only within the direction the pilot established or the user delegated (Part 2).
+3. **Export** by muxing `master-audio.wav`, never the narration alone, with the rendered frames. Check dimensions, frame rate, decode success, and video and audio duration against `resolved-timeline.json`.
+4. **Check for dead stretches:** `ffmpeg -i lesson.mp4 -vf freezedetect=n=-60dB:d=8 -map 0:v -f null -` reports every stretch of 8 seconds or more without visible change. It catches dead frames, not meaningful change; a dimmed visualizer that keeps moving passes it, so it backs up the camera-move events rather than replacing review.
+5. **Bind** the export's hash to the manifest, narration, BGM take, timeline and renderer source revision. Report only the states actually reached (Part 2, "Export and verify").
+
+## Part 2: Timing, Design and Rendering Lessons
 
 Use this mode when the user wants an animated video for an accepted song. It is separate from using a video as a musical reference in Suno. Preserve the user's chosen recording and visual direction; do not regenerate the song to simplify animation.
 
-For instrumentals or detailed per-stem animation, also read `instrumental-video-production.md`. For narrative continuity, world systems and renderer choice, read "Narrative continuity, world systems and renderer lessons" below. For ambitious references, a rejected draft or developing music and film together, read `video-direction-and-quality.md` before designing another pass. For bundled helpers and project-specific implementations, see `../docs/video-capabilities.md`.
-
-## Lesson videos: how this guide applies
-
-The YouTube lesson engine reuses this guide with spoken narration in place of sung lyrics. Read `script-and-retention-engine.md` for the manifest and timeline, and `bgm-suno-scoring.md` for the music bed.
-
-- **Timing authority.** The rendered narration audio sets segment and word timing; the selected BGM take sets musical events. Keep the hash of each, as with a selected song.
-- **Word timing.** TTS provider timestamps, or `scripts/align-lyric-words.py` on the narration, replace lyric-cue alignment. Highlight triggers are the kinetic-type word events: a code line or diagram node lands on its spoken word.
-- **Design system.** One dark ground, one accent, a display face plus a monospace face suits `code_focus` and `architecture_graph` directly. The legibility fixes below (bloom threshold, halos, fit-to-width, layer order) apply to code and diagram type as they do to lyrics.
-- **Music-driven motion.** In `vibe_drop` segments the bed drives light, camera weight and impacts (`instrumental-video-production.md`). In `ducked` segments motion stays calm so the explanation leads.
-- **Scored events.** The hook's 3-second drop is a scored event: locate it in the BGM take and align it, or cut hard to the drop on a measured downbeat.
-- **Pilot first.** Pilot the hook plus one Mechanism block at full quality before rendering the whole lesson. Export verification and honest state reporting apply unchanged.
-
-## Where the work lives
+### Where the work lives
 
 Keep two homes and never mix them. The renderer's code goes in its own version-controlled repository (initialise it with the first file). Everything the production makes or consumes goes in one durable production folder per song: the selected audio and its hash, the song sheet, stems, analysis, timing, every render pass, contact sheets, treatment and production log. The repository links to that folder (symbolic links for the audio and analysis) rather than copying media into itself, and build output stays ignored. A render finished in any tool's own output or scratch directory is copied into the production folder's `renders/<pass-name>/` in the same turn, and the log records where it is. When a machine has its own workspace rules for these locations, they take precedence over this paragraph.
 
-## Audio is the timing authority
+### Audio is the timing authority
 
 Keep the original audio, its SHA256, generation identifier if present, accepted lyrics and timing source in the durable production folder. Inspect codecs, duration, metadata and subtitle streams before proposing transcription or an external API. Some Suno M4A downloads contain a timed `mov_text` lyric track, even if the actual audio codec is Opus.
 
@@ -27,7 +81,7 @@ Run `python3 scripts/extract-video-timing.py AUDIO OUTPUT.json` from the skill d
 
 A browser-compatible AAC playback derivative may be useful when the source uses an unsupported codec. Preserve the source and document the conversion. Do not assume an M4A extension implies AAC. Measure the actual track duration; genre/BPM and bar lengths in a generation prompt are targets, not a measured beat grid.
 
-## Word-level timing for kinetic type
+### Word-level timing for kinetic type
 
 Embedded Suno cues are line-level, their end times are often a flat placeholder, and their start times can drift far from the recording. In one observed song the final-chorus cue ran 24 seconds early and the sung bridge was 10 seconds late. Kinetic typography needs each word.
 
@@ -37,7 +91,7 @@ Embedded Suno cues are line-level, their end times are often a flat placeholder,
 4. Whisper stretches a phrase's first word back across the preceding silence. Pull only that first word's start toward its end. Long later words are usually genuinely held notes; shifting them hides the word for most of its sung duration. A long first word can also be held, so do not apply a blanket length rule: check the vocal stem's energy (40 ms RMS against a fixed floor) for each long first word and move its start to where the voice actually begins. On one track two of six long first words were genuinely held and a blanket rule would have hidden them.
 5. Expect the transcript to "hear" prompt lyrics over a long instrumental intro when the lyric is supplied as a prompt. The cue window is what keeps those out.
 
-## Scored events: measure each one, then mark it located or absent
+### Scored events: measure each one, then mark it located or absent
 
 Suno treats bracket directions as weak hints. Silences, breaks, strips, builds, intro lengths and outro hits written into the lyric field frequently do not exist in the take, or exist somewhere else. Before designing, test each scored event against the audio and record it as located fact (start, end, evidence) or absent:
 
@@ -48,7 +102,7 @@ Suno treats bracket directions as weak hints. Silences, breaks, strips, builds, 
 
 Then design to the located facts. An absent event is not faked with a visual: on one track the scored 2-beat silence before the final chorus did not exist, so the edit used a hard cut to clean frame on the downbeat instead, and the "stripped" bridge kept its drums, so the visual valley went to the 3 s where the band really dropped out. Novelty-based section detection can also fail outright (one 92 s block); stems plus word times gave a usable map.
 
-## Study the reference, then set a design system
+### Study the reference, then set a design system
 
 When the user points to videos they admire, inspect the exact reference and its credits. A sparse contact sheet and scene-change detector help locate passages; close motion study establishes how they work. Follow `video-direction-and-quality.md` for that breakdown. Different films by one creator can use different engines. Record creator-confirmed tools separately from inferred techniques.
 
@@ -62,7 +116,7 @@ The following are options observed in lyric-led reference work, not requirements
 
 Lyric-driven type and music-driven motion can complement each other. Where the treatment uses them, let words drive type and measured musical events motivate light, camera and impacts. Real analysis can drive interface readouts, but explanatory graphics and constant beat pulses do not substitute for compelling shot design.
 
-## Pilot before full-song production
+### Pilot before full-song production
 
 Write a brief that establishes meaning, palette, characters, props, world, focal actions and transitions. Map the pilot to actual audio events. Choose a short scope that proves the riskiest action; a few seconds may suffice, while an arc may need 20–30 seconds or neighbouring sections. Avoid padding to a fixed duration. Build something watchable before filling the song. Once the user accepts that direction or delegates completion, proceed without imposing another approval round. Acceptance applies to the version and scope reviewed; an explicit rejection stops expansion of that direction.
 
@@ -94,11 +148,11 @@ Light-ground (paper) systems need their own versions of the HDR rules:
 - An impact flash or dark section is a luma-only inversion (`col + (1 - 2Y)`): paper goes black, ink goes white, and the accent keeps its hue. A full RGB negative turns a blue accent yellow and breaks the one-accent rule.
 - Small mono labels need a ground-coloured halo too; static eats them otherwise.
 
-## Extending a pilot to the full song
+### Extending a pilot to the full song
 
 Write a shot table covering every second, including instrumental stretches. Shots can span multiple lines or split a phrase according to the action; one shot per line is an option for graphic treatments. Make coverage gapless so no second falls through to an accidental fallback. Give each shot an optional style-frame time for its key reveal and emit a whole-film contact sheet. Instrumental passages may use performance, story action or analysis-driven imagery. Carry a deliberate arc and a payoff that follows from the premise. Check the whole-film board and rough timing before the expensive render, while retaining early motion proofs for risky shots.
 
-## Make direction specific and portable
+### Make direction specific and portable
 
 A local preview can offer play/pause, scrubbing, frame stepping, shot selection, subtitle offset and frame/range annotations. Feedback should identify:
 
@@ -109,7 +163,7 @@ A local preview can offer play/pause, scrubbing, frame stepping, shot selection,
 
 Bind exported notes to the source-audio hash and any subtitle offset. Browser storage is convenient persistence, not the durable archive: export feedback beside the song. Render user notes as text rather than raw HTML.
 
-## Export and verify
+### Export and verify
 
 Use the same scene evaluation and typography in preview and export. Confirm the headless browser renders on the GPU before estimating render time: query `WEBGL_debug_renderer_info`. On macOS, Playwright with the installed Chrome channel and ANGLE Metal reported the Apple GPU, while the bundled headless shell may be missing. Pipe frames to the encoder in resumable chunks rather than storing full-resolution PNG sequences. With headless browser screenshots, wait for fonts and compositor paint after rendering, especially after viewport changes. Test identical timestamps in non-sequential order. A scene may be deterministic while screenshots still capture stale browser paint.
 
@@ -117,7 +171,7 @@ Mux the accepted audio with rendered frames and check output dimensions, frame r
 
 Distinguish these states: pilot built, browser checks passed, render exported, playback visually/audibly reviewed, user accepted, full song complete. Report only states actually reached. Do not claim to have listened when only metadata or subtitles were inspected.
 
-## Large renders, resumability and delivery size
+### Large renders, resumability and delivery size
 
 Measure encoding cost in the pilot. High-strength per-pixel animated grain made one 41-second pilot about 1 GB; coarser 2x2 grain at lower strength plus CRF 18 reduced the later master to about 399 MB. Those are observations from different pilot passes, not a controlled benchmark. Tune grain and inspect motion before sacrificing the whole image to more compression. Keep a master and a smaller review derivative, clearly labeled; CRF 18 and 24 were useful starting points in this production, not universal settings.
 
@@ -127,9 +181,62 @@ Stream or chunk SHA256 hashing for large media. Reading a multi-gigabyte video i
 
 Preserve the selected original audio as the mux source; do not compound lossy encoding by using the browser playback derivative. If delivery compatibility requires transcoding, derive it from the original and record the codec conversion. Check final-frame coverage and audio/video endpoints on the encoded output, allowing for documented frame rounding.
 
-## Narrative continuity, world systems and renderer lessons
+## Part 3: Music-Driven Motion
 
-Carried over intact from the retired story-world reference. Read it for narrative continuity, world-building, rendered characters or renderer choice; for a rejected draft or ambitious reference, also read `video-direction-and-quality.md`. The city and character experiments below produced technical lessons, but their full-film result was not creatively accepted. Audio timing and deterministic export still apply.
+Use this part when motion should follow the bed's instruments as well as the narration, or for instrumental and vocal music videos. Missing subtitle streams are normal for an instrumental; do not invent lyric timing or require a transcription stage.
+
+### Let the recording determine the structure
+
+Preserve the selected audio and its identity. Measure actual duration, then derive the visual treatment from four timescales:
+
+| Timescale | Audio evidence | Visual role |
+|---|---|---|
+| Form | Sections, repeated motifs, changes in instrumentation | Worlds, palette evolution, major transformations |
+| Phrase | Downbeats, phrase starts, builds and drops | Camera moves, reveals, anticipation and cuts |
+| Beat | Beat events and individual stem onsets | Impacts, pulses, sparks and brief light changes |
+| Texture | Per-stem level, envelopes and spectral brightness | Density, mass, speed, roughness and colour |
+
+Give stems distinct jobs: drums can drive impacts, bass can drive mass or camera weight, and melodic content can drive form or colour. When an instrument drops out, its layer should empty. A single full-mix volume envelope cannot represent that distinction.
+
+### Offline analysis contract
+
+Archive measured events and sampled feature curves beside the selected audio. The renderer should evaluate them at any absolute time without live audio input.
+
+1. Create a documented analysis derivative without replacing the original. Separate stems where the visual treatment benefits from them. The production experiments used Demucs `htdemucs_ft` and `htdemucs_6s`; model names are choices, not a guarantee of clean isolation.
+2. Detect beats and downbeats, then cross-check against drum onsets across the whole recording. Beat This! and librosa were used in the experiments. Treat median BPM as a summary, not a fixed animation clock: one take drifted from about 129 to 132 BPM, and a grid at the requested 128 BPM matched only 29% of measured kicks.
+3. Propose sections from novelty/chroma/MFCC analysis and inspect per-bar stem energy. Machine boundaries remain proposals until checked. A novelty kernel sign error once collapsed an entire song into one section; even a corrected detector later produced an unhelpful 92-second block. Use stems, words where present, and playback to resolve boundaries.
+4. Compute per-stem level, smoothed attack/release envelopes, onset strength and spectral brightness at an explicit control rate. The existing project pipeline uses 120 Hz, interpolated to video timestamps. Record rate, frame count, curve names, numeric dtype and layout; validate byte length before loading a binary feature file.
+5. Keep raw beat events and any corrections separately. Record located versus absent scored events using Part 2. Do not turn requested silences, intro lengths or bar counts into measured facts.
+
+Inspect stem leakage. A six-stem "guitar" output contained a distorted synth in a guitar-free intro; it was useful as a mid-range lead layer, not evidence of an isolated guitar. A "vocals" stem can contain effects and separation residue on an instrumental.
+
+Retain an absolute noise floor when normalizing. Per-track percentile scaling can inflate an absent instrument's residue into full motion. Test whether the stem is actually present, gate inactive layers, and record the thresholds used. Check onset thresholds and minimum separation so one attack does not become several impacts.
+
+### Reproducible musical motion
+
+Use measured beat/bar events for phase. A precomputed monotone musical-time curve, the integral of a smoothed energy curve, lets motion accelerate with the music while remaining a function of absolute time. Seed procedural randomness and use time-indexed event lookup rather than advancing a cursor on every preview frame.
+
+History-dependent fluids or particle advection need fixed-step simulation and saved checkpoints, or a closed-form approximation. A seek must restore a checkpoint and replay deterministically rather than inherit the previous preview state. Test timestamps in a non-sequential order before parallel rendering.
+
+Anticipation can use the known future drop: tighten framing or reduce light in the preceding phrase. This is a creative choice, not a rule that every cut must land on a downbeat.
+
+### Treatment and rendering choices
+
+Map motifs to musical layers and an evolution across the track. Keep the representative motion proof and whole-film review workflow from Part 2. For a demanding reference or rejected draft, use `video-direction-and-quality.md`; synchronized feature curves alone do not establish compelling imagery. Do not add a new approval gate when the user has delegated direction and completion.
+
+Choose effects for the aesthetic. HDR materials, selective bloom, volumetric light, instancing, reaction-diffusion and raymarched forms are possible techniques, not a mandatory stack. Some remained proposals in the instrumental approach notes; do not describe them all as implemented or tested.
+
+Optional offline motion blur averages deterministic subframes across a shutter interval in linear HDR before tonemapping. Supersampling can improve fine geometry and type but increases cost. Benchmark a short representative range first. Paper/ink treatments need the light-ground rules in Part 2 instead of blindly applying a dark-scene filmic grade.
+
+### Tooling boundary
+
+The skill ships embedded-cue and BGM beat/onset/envelope extraction (`extract-video-timing.py --beats`), word alignment, narration and timeline compilation, and the envelope mixer. It does **not** ship a stem-separation or rendering executable. The existing video projects contain `prepare.sh`, `analyze.py`, feature samplers and renderers; consult the capability inventory in `docs/video-capabilities.md` before assuming a command is installed with this skill.
+
+When adapting those implementations, parameterize source and output paths, preserve their provenance, verify dependencies against the target machine, and validate on known synthetic events plus a representative real recording. Keep toolchain recommendations separate from a claim that every dependency is already installed.
+
+## Part 4: Narrative Continuity, World Systems and Renderer Lessons
+
+Read this part for narrative continuity, world-building, rendered characters or renderer choice; for a rejected draft or ambitious reference, also read `video-direction-and-quality.md`. The city and character experiments below produced technical lessons, but their full-film result was not creatively accepted. Audio timing and deterministic export still apply.
 
 ### Why a polished lyric video can feel dead
 
@@ -219,10 +326,12 @@ Compare existing reference and draft sheets to identify scale, palette and pace 
 - A rigged, animated stock character (for example the X Bot mannequin from the three.js examples, which comes from Mixamo; check the licence for your use) driven at an explicit clip time (`action.time = f(t)`, then `mixer.update(0)`) stays deterministic. Pin the hips' root motion so the story owns position. Seated, typing or leaning poses can be laid over the idle clip as per-bone local rotations, with signs found by test renders.
 - Crowds by level of detail: rigged clones (`SkeletonUtils.clone`) for nearby people, simpler silhouettes further away. Test the actual camera; distance does not automatically make a crude pose convincing.
 
-## YouTube release handoff
+## Release Handoff and Improving the Skill
+
+### YouTube release handoff
 
 Once the user wants to publish the finished video, read `youtube-release.md` for title, description, channel bio, Suno rights and YouTube AI disclosure. A completed render or upload is not evidence of a public release. Keep the artist-specific copy and actual publication status beside the durable release materials.
 
-## Improve the skill from the experiment
+### Improve the skill from the experiment
 
 Record the failed version, attempted correction, technical result and latest user verdict separately. Label a proposed remedy as unproven until reviewed; technical improvement does not imply creative acceptance. Keep song-specific media, private stories and generation logs out of reusable skill references. For song deliveries, include the selected model and a proposed control preset, conditional on available controls. Identify suggested slider values as untested until auditioned.

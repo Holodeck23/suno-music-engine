@@ -81,18 +81,19 @@
     },
     {
       "id": "seg_06_proof_catfile",
-      "narration": "Here is the proof in a real repository. Ask Git for the type of HEAD and it answers commit. Print that commit and you get one tree hash, one parent, the author, the committer and the message. Print the tree and you get file modes, object types, hashes and names. Each hash is the address of the object one level down.",
+      "narration": "Here is the proof in a real repository. Ask Git for the type of HEAD and it answers commit. Ask that commit for its tree and its parent, and you get two more hashes. List the tree and you get file modes, object types, hashes and names. Each hash is the address of the object one level down.",
       "visual_state": "code_focus",
       "bgm_mode": "ducked",
       "visual_payload": {
-        "code_snippet": "$ git cat-file -t HEAD\ncommit\n$ git cat-file -p HEAD\ntree 2532dc0f68fbe991cfff017977b9976778534e7e\nparent b80d9cacbe1a2c40aa37138ed30d2fa0eedaf71d\nauthor Ada <ada@example.com> 1790845500 +0000\ncommitter Ada <ada@example.com> 1790845500 +0000\n\nUpdate notes\n$ git cat-file -p HEAD^{tree}\n100644 blob ce013625030ba8dba906f756967f9e9ca394464a\thello.txt\n100644 blob 8ff82333fa5f2870433063e24f7218e7702a078d\tnotes.md",
+        "code_snippet": "$ git cat-file -t HEAD\ncommit\n$ git log -1 --format='tree %t%nparent %p'\ntree 2532dc0\nparent b80d9ca\n$ git ls-tree --abbrev=8 HEAD\n100644 blob ce013625\thello.txt\n100644 blob 8ff82333\tnotes.md",
         "highlight_triggers": [
           {"word": "type", "action": "reveal_line_1"},
           {"word": "commit", "action": "reveal_line_2"},
-          {"word": "Print", "action": "reveal_line_3"},
-          {"word": "tree", "action": "highlight_line_4"},
-          {"word": "tree", "action": "reveal_line_10"},
-          {"word": "names", "action": "reveal_line_12"}
+          {"word": "tree", "action": "reveal_line_4"},
+          {"word": "parent", "action": "reveal_line_5"},
+          {"word": "List", "action": "reveal_line_6"},
+          {"word": "names", "action": "reveal_line_8"},
+          {"word": "address", "action": "highlight_line_7"}
         ]
       }
     },
@@ -102,7 +103,7 @@
       "visual_state": "code_focus",
       "bgm_mode": "ducked",
       "visual_payload": {
-        "code_snippet": "$ git ls-tree HEAD~1 hello.txt\n100644 blob ce013625030ba8dba906f756967f9e9ca394464a\thello.txt\n$ git ls-tree HEAD hello.txt\n100644 blob ce013625030ba8dba906f756967f9e9ca394464a\thello.txt",
+        "code_snippet": "$ git ls-tree --abbrev=8 HEAD~1 hello.txt\n100644 blob ce013625\thello.txt\n$ git ls-tree --abbrev=8 HEAD hello.txt\n100644 blob ce013625\thello.txt",
         "highlight_triggers": [
           {"word": "both", "action": "reveal_line_2"},
           {"word": "trees", "action": "reveal_line_4"},

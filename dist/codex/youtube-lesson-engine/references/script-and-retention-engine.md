@@ -1,6 +1,6 @@
 # Script and Retention Engine: From Topic to `lesson-manifest.json`
 
-Methodology for turning a technical concept, an AI release or a GitHub repository into a 3–6 minute faceless lesson, and the strict manifest every script compiles into. The manifest is the hand-off between writing and production: narration goes to TTS, `bgm_mode` drives the music automation (`bgm-suno-scoring.md`), and `visual_state` / `visual_payload` drive the renderer (`music-video-production.md`).
+Methodology for turning a technical concept, an AI release or a GitHub repository into a 3–6 minute faceless lesson, and the strict manifest every script compiles into. The manifest is the hand-off between writing and production: `scripts/generate-tts-and-cues.py` narrates it and compiles the timeline, `bgm_mode` drives the mixer (`scripts/mix-voice-and-bgm.py`, `bgm-suno-scoring.md`), and `visual_state` / `visual_payload` drive the renderer (`visual-lesson-production.md`).
 
 Validate every manifest before production:
 
@@ -75,7 +75,7 @@ Estimates come from word counts. The **rendered narration audio is the timing au
 
 ## 3. Retention Mechanics
 
-- **Something changes on screen at least every 20–40 seconds.** A new segment or a highlight trigger counts. The validator warns when a segment averages more than 40 s per visual beat. Treat this as a diagnostic, not a quota: cut counts do not measure quality, and calmer passages can hold a single, developing visual.
+- **The picture changes at least every 6–8 seconds; the content at least every 20–40.** A visual state change, a highlight trigger or a camera move satisfies the 6–8 second rule. The compiled timeline inserts a `camera_move` wherever nothing else happens for more than 7 s (`video-direction-and-quality.md`, mobile legibility). New *information* (a segment or trigger) should still arrive every 20–40 seconds; the validator warns when a segment averages more than 40 s per visual beat. Cut counts do not measure quality, and a calm passage can hold one developing visual.
 - **The visual payoff lands on the word.** Triggers reveal the code line or diagram node at the moment the narration names it. A reveal that arrives early spoils it; one that arrives late reads as lag.
 - **One idea per sentence.** Short declarative sentences survive TTS and keep pace without rushing.
 - **Name the misconception, then break it.** "Branches are not containers" teaches faster than a neutral definition.
@@ -160,16 +160,16 @@ No other fields are allowed at any level. Unknown keys are errors, so a typo can
 | `vibe_drop` | Atmospheric motion and type: headline, music-driven light, the drop | Hook, Verdict | Nothing; a headline is usual |
 | `code_focus` | Code or terminal block with progressive reveal and line highlights | Mechanism, Proof | `code_snippet` |
 | `architecture_graph` | Node/edge diagram revealed node by node | Mechanism | `diagram_nodes` |
-| `artifact_pan` | Slow pan across a real artifact: paper figure, repository page, benchmark table, release note | Proof, Verdict | The artifact image comes from the production folder by segment id. A headline is usual |
+| `artifact_pan` | Slow pan and zoom across a real artifact: paper figure, repository page, benchmark chart, release note | Proof, Verdict | The capture and its region boxes come from the production folder (`artifacts/<segment id>.png` + `.json`); `diagram_nodes` names the regions in order, so `reveal_node_<n>` / `highlight_node_<n>` zoom to or box region `n` |
 
 ### BGM modes
 
 | Mode | Meaning |
 |---|---|
-| `ducked` | The bed sits well under the narration: EQ pocket plus a gain reduction (start near −12 dB) and sidechain ducking keyed from the voice |
-| `full_swell` | The bed plays at full level. Sidechain ducking stays active, so any words in the segment still cut through. Used for the hook build and drop, and the verdict and end card |
+| `ducked` | Under speech the bed sits at −18 dB with a −3 dB dip at 1.5 kHz, reaching that level 0.3 s before the first word. It stays there through pauses between words and sentences, so the music never pumps |
+| `full_swell` | Opens a transition around the segment: the pause before and after it becomes a 3.5 s transition in which the bed rises to −2 dB with the dip released (the hook drop, the swell into the Verdict). Speech inside the segment is still ducked. The intro before the first word and the outro after the last always swell |
 
-Ramp between modes over about 0.3–0.5 s, landing on a measured downbeat where the timeline allows (`bgm-suno-scoring.md` §12).
+The mixer rises over 0.8 s starting 0.25 s after the last word and falls over 0.5 s, completing 0.3 s before the next word (`scripts/mix-voice-and-bgm.py`; every level and time is a flag).
 
 ### Trigger actions
 
@@ -208,16 +208,16 @@ Warnings (`--strict` makes these fail):
 
 ## 6. From Manifest to Timeline
 
-The production lessons in `music-video-production.md` apply with narration in place of lyrics.
+The production lessons in `visual-lesson-production.md` apply with narration in place of lyrics. Three scripts turn a valid manifest into a timed, mixed lesson.
 
-1. **The rendered narration audio is the timing authority.** Render TTS per segment (or as one file with known segment boundaries), keep each file's SHA256 beside the manifest, and measure real durations. Word-count estimates are for planning only.
-2. **Word timing from the TTS provider first.** ElevenLabs offers a text-to-speech endpoint with timestamps that returns character-level start/end times for the synthesized audio (verify the current endpoint and fields against its API docs). Group characters into words and resolve each trigger to its word's start time.
-3. **Fallback alignment:** when the provider gives no timestamps, run `scripts/align-lyric-words.py` on the narration audio with a timing file holding one cue per segment (`{"lyrics": [{"start", "end", "text"}]}`). Narration is clean speech, so no stem separation is needed. The helper accepts a heard word only within `--window` seconds after its cue's start (default 30), so set `--window` to at least the longest segment's duration. It uses `mlx-whisper` on Apple hardware; substitute any Whisper build that returns word timestamps elsewhere. Report the matched/total word count, and check interpolated words against playback.
-4. **Assemble the timeline:** segment start = previous segment end (plus any deliberate pause); the hook's drop starts at its last word's end and lasts 3.0 s; then apply `bgm_mode` automation per segment.
-5. **Align the BGM:** offset the hook-intro stem so its measured drop downbeat lands on the drop time (`bgm-suno-scoring.md` §12). Never time the drop from the prompt BPM.
-6. **Render deterministically:** every frame evaluates from absolute time. Keep a pilot-first workflow, contact sheets plus motion review, and export verification (`music-video-production.md`).
-
----
+1. **Narrate and compile.** `scripts/generate-tts-and-cues.py` validates the manifest, then produces `master-narration.wav`, `resolved-timeline.json` and `chapters.txt`.
+   - `--provider elevenlabs` calls `/v1/text-to-speech/{voice_id}/with-timestamps` once per segment with `ELEVENLABS_API_KEY`. It sends the neighbouring narration as `previous_text`/`next_text` for continuous prosody and converts the returned character alignment into word times. If the provider normalises the text (numbers spelled out, for example), characters are mapped back through a diff. Responses are cached, so reruns are not billed again.
+   - `--provider local-audio --audio-file VOICE` aligns a recorded voiceover or local TTS with the matching logic of `align-lyric-words.py`. Whisper's habit of stretching a first word back over the preceding silence is corrected from the recording's energy (40 ms RMS against a fixed floor), and words Whisper missed are interpolated against neighbours in their own segment. It fails if less than 60% of the narration is heard, which usually means the wrong file.
+2. **Pauses.** Segments are stitched with 0.4 s of silence between ordinary segments and 3.5 s around `full_swell` segments, which holds the 3-second hook drop. `--lead-in` (0) and `--outro` (4 s) frame the lesson. The rendered narration audio is then the timing authority; word-count estimates are for planning only.
+3. **The timeline** holds every word's start and end, each trigger resolved to its word's start time, gapless `slots` (segments alternating with `intro`, `drop`, `swell` and `outro` transitions), `events` including the inserted `camera_move`s, and YouTube-ready `chapters`.
+4. **Beat markers.** `scripts/extract-video-timing.py BGM.wav BGM-TIMING.json --beats --merge-into resolved-timeline.json` adds the bed's beats, estimated downbeats, onsets and absolute envelopes in program time. It also reports `bgm.hookDrop.suggestedOffset`, the head trim that lands a measured downbeat exactly on the drop; rerun with `--bgm-offset` set to it and `--force-merge`. Never time the drop from the prompt BPM.
+5. **Mix.** `scripts/mix-voice-and-bgm.py master-narration.wav BGM.wav resolved-timeline.json master-audio.wav` applies the `bgm_mode` envelope, reads the BGM offset from the timeline, and masters to −14 LUFS with a −1 dBTP ceiling.
+6. **Render deterministically.** Every frame evaluates from absolute time against the timeline. Keep the pilot-first workflow, contact sheets plus motion review, and export verification in `visual-lesson-production.md`.
 
 ## 7. Delivery States and Checklist
 
