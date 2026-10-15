@@ -20,7 +20,7 @@ Reviewed 2026-10-15 against the canonical skill and the Soft Parts, Rectify, Ign
 | GPU verification, chunked export, grain cost, large-file hashing and render identity | Main video guide |
 | Story treatment, boards/animatics, world memory as dated events, optional diegetic type and world systems | `references/story-world-video.md` |
 | Representative motion proofs, acting/contact risks, rejection handling and bounded iteration | Direction and quality guide |
-| Camera-boundary prevention, known-failure regression cases, shutter interpolation, contiguous preview editing and jitter diagnosis | Direction and quality guide; the camera-audit implementation is project-specific |
+| Camera-boundary prevention, known-failure regression cases, fractional cut indexing, actual FCurve interpolation, independent shutter-path checks, contiguous preview editing and jitter diagnosis | Direction and quality guide; the camera-audit implementation is project-specific |
 | Browser/Blender comparisons, actual renderer provenance, snapshot versus animated scene | Story-world and direction guides; renderer implementations remain project-specific |
 | Titles, descriptions, channel bios, rights and AI disclosure | `references/youtube-release.md` |
 
@@ -46,7 +46,7 @@ All Signal full-v2 used three.js/browser rendering; its Blender comparisons were
 
 The next proposed craft step is close study of a strong reference sequence followed by an original, representative motion shot. That step has not yet demonstrated a reference-level result. This skill captures the procedure and failed attempts honestly; it does not claim the missing artistic knowledge has already been acquired.
 
-Crumbs in the Kernel later produced a technically verified 20-second Cycles pilot. The user judged it better, with room for improvement, identified a camera jump and asked what was happening. That supports continuing the direction, not claiming a finished or accepted film. Full-film work added a visible recurring fragment, camera-boundary checks with the actual failed poses as a regression case, smoothed controls and shutter-time camera keys. Its complete-film outcome remains pending until export and review; shader/renderer benchmarks do not establish artistic success.
+Crumbs in the Kernel later produced a technically verified 20-second Cycles pilot. The user judged it better, with room for improvement, identified a camera jump and asked what was happening. That supports continuing the direction, not claiming a finished or accepted film. Full-film work added a visible recurring fragment, camera-boundary checks with the actual failed poses as a regression case, smoothed controls and shutter-time camera keys. Fractional-frame audits then caught incorrect cut indices and Bezier interpolation hidden by the analytic evaluator; the corrected path passed those numerical checks. Only camera/focus transforms, lens and fragment location were baked, so this is not evidence of complete object-motion blur. The 1080p EEVEE full pass is rendering; its complete-film outcome remains pending until export and review. Shader/renderer benchmarks do not establish artistic success.
 
 ## Maintenance check
 
