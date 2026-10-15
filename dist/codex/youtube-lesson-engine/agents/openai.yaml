@@ -1,0 +1,3 @@
+interface:
+  short_description: 'Turn AI and tech lessons, AI releases, news and GitHub'
+  default_prompt: Use $youtube-lesson-engine to ...

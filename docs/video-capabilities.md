@@ -1,6 +1,6 @@
-# Video capabilities shipped with Suno Music Engine
+# Video capabilities shipped with YouTube Lesson Engine
 
-Reviewed 2026-10-15 against the canonical skill and the Soft Parts, Rectify, Ignition Syntax and All Signal production records, including the rejected Blender kitchen sample. This inventory describes reusable capability coverage, not acceptance or publication of any particular film. Rebuild and verify both runtime installations after changing these sources.
+Reviewed 2026-10-15 against the canonical skill and the Soft Parts, Rectify, Ignition Syntax and All Signal production records, including the rejected Blender kitchen sample. This inventory describes reusable capability coverage, not acceptance or publication of any particular film. The lesson-engine refactor (also 2026-10-15) kept every video lesson: the story-world reference now lives as the narrative-continuity section of `references/music-video-production.md`, and only the songwriting, album and personal-translation references were retired. Rebuild and verify both runtime installations after changing these sources.
 
 ## Included in Git and both runtime adapters
 
@@ -18,21 +18,25 @@ Reviewed 2026-10-15 against the canonical skill and the Soft Parts, Rectify, Ign
 | Pilot, style frames, full-song shot coverage and frame/range review | Main video guide |
 | HDR/type legibility, light-ground grading, layer order, fit-to-width and burn pacing | Main video guide |
 | GPU verification, chunked export, grain cost, large-file hashing and render identity | Main video guide |
-| Story treatment, boards/animatics, world memory as dated events, optional diegetic type and world systems | `references/story-world-video.md` |
+| Story treatment, boards/animatics, world memory as dated events, optional diegetic type and world systems | Narrative-continuity section of `references/music-video-production.md` |
 | Representative motion proofs, acting/contact risks, rejection handling and bounded iteration | Direction and quality guide |
 | Camera-boundary prevention, known-failure regression cases, shutter interpolation, contiguous preview editing and jitter diagnosis | Direction and quality guide; the camera-audit implementation is project-specific |
-| Browser/Blender comparisons, actual renderer provenance, snapshot versus animated scene | Story-world and direction guides; renderer implementations remain project-specific |
+| Browser/Blender comparisons, actual renderer provenance, snapshot versus animated scene | Main video guide's narrative-continuity section and the direction guide; renderer implementations remain project-specific |
 | Titles, descriptions, channel bios, rights and AI disclosure | `references/youtube-release.md` |
+| Lesson manifest contract, Dave Dark structure checks, trigger word/target validation and runtime estimates | `scripts/validate-lesson-manifest.py`, `references/lesson-manifest.schema.json` and `references/script-and-retention-engine.md` |
+| Narration as timing authority, TTS word timing and trigger resolution | `references/script-and-retention-engine.md` §6 and the main video guide; provider-timestamp parsing is not automated by a bundled helper |
+| BGM loop cutting on downbeats, voice-band EQ pocket, sidechain ducking, per-segment gain automation, loudness targeting and hook-drop alignment | `references/bgm-suno-scoring.md` §12; FFmpeg recipes tested on synthetic audio, no bundled mixing executable |
 
 ## Helper prerequisites and limits
 
 - `extract-video-timing.py AUDIO OUTPUT.json`: Python 3 plus FFmpeg/FFprobe on PATH. Refuses to overwrite its output. Extracted cues are explicitly unverified.
 - `align-lyric-words.py TIMING.json VOCALS.wav OUTPUT.json`: the implementation uses `mlx-whisper` on compatible Apple hardware (see its usage docstring). A first model run may download weights; audio transcription stays local. It writes a raw transcript sidecar and reuses it if present. Use a fresh output basename for different audio/model inputs to avoid stale transcript reuse. It currently assumes English lyrics; other languages need an adapted transcription/normalization path.
+- `validate-lesson-manifest.py MANIFEST [--wpm 150] [--strict] [--json]`: Python 3.8+ standard library only; reads the schema from `references/` beside it. Writes nothing. Exit 0 valid, 1 errors (or warnings with `--strict`), 2 unreadable input. Its durations are word-count estimates; rendered narration audio remains the timing authority.
 - Word interpolation and a high matched count are not proof of sync. Inspect repeated choruses, first-word holds and unmatched passages against playback.
 
 ## Project implementations are separate
 
-The skill ships production methods and the two helpers above. It is not a bundled video editor or universal renderer. Bespoke scenes, review applications, stem-analysis scripts and renderers remain in the corresponding video projects. Do not claim `scripts/analyze.py`, `scripts/prepare.sh` or `scripts/render.mjs` exists in an installed skill.
+The skill ships production methods and the three helpers above. It is not a bundled video editor, universal renderer, TTS client or mixing pipeline. Bespoke scenes, review applications, stem-analysis scripts and renderers remain in the corresponding video projects. Do not claim `scripts/analyze.py`, `scripts/prepare.sh` or `scripts/render.mjs` exists in an installed skill.
 
 The local projects inspected were under `/Users/Shared/repos/content/`: `soft-parts-video`, `rectify-video`, `ignition-syntax-video`, `all-signal-video` and `crumbs-in-the-kernel-video`. These are local provenance pointers, not portable dependencies. Their analysis/rendering and camera-audit implementations have not been consolidated into the skill; copying them requires implementation review and validation, rather than treating documentation coverage as a tested code migration.
 

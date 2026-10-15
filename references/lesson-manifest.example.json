@@ -1,0 +1,127 @@
+{
+  "title": "Git Doesn't Store Diffs: The Database Inside Your Repo",
+  "bgm_track": "audio/bgm/dark-synthwave-104bpm-loop.mp3",
+  "voice_id": "REPLACE_WITH_ELEVENLABS_VOICE_ID",
+  "segments": [
+    {
+      "id": "seg_01_hook",
+      "narration": "Every commit you have ever made is a full snapshot of your project, not a diff. Git is a content-addressed database, and that one choice explains how it works.",
+      "visual_state": "vibe_drop",
+      "bgm_mode": "full_swell",
+      "visual_payload": {
+        "headline": "Snapshots, not diffs",
+        "highlight_triggers": [
+          {"word": "snapshot", "action": "show_headline"}
+        ]
+      }
+    },
+    {
+      "id": "seg_02_mechanism_objects",
+      "narration": "Inside the hidden dot git folder, Git stores four kinds of objects. A blob holds the raw bytes of one file. A tree lists file names and points at blobs and other trees. A commit points at one tree, its parent commits, an author and a message. An annotated tag points at a commit. Every object is named by a hash of its type, its size and its contents.",
+      "visual_state": "architecture_graph",
+      "bgm_mode": "ducked",
+      "visual_payload": {
+        "headline": "Four object types",
+        "diagram_nodes": ["annotated tag -> commit", "commit -> tree", "tree -> blob", "tree -> subtree"],
+        "highlight_triggers": [
+          {"word": "blob", "action": "reveal_node_3"},
+          {"word": "tree", "action": "reveal_node_4"},
+          {"word": "commit", "action": "reveal_node_2"},
+          {"word": "tag", "action": "reveal_node_1"},
+          {"word": "hash", "action": "highlight_node_2"}
+        ]
+      }
+    },
+    {
+      "id": "seg_03_mechanism_hashing",
+      "narration": "By default that name is a SHA-1 hash, forty hex characters. Git hashes a short header, the object type and the byte count, followed by the bytes themselves. Change one byte and the name changes completely. That is why an unchanged file costs nothing in a new commit. Same bytes, same hash, one stored blob, shared by every snapshot that contains it.",
+      "visual_state": "code_focus",
+      "bgm_mode": "ducked",
+      "visual_payload": {
+        "code_snippet": "$ echo hello | git hash-object --stdin\nce013625030ba8dba906f756967f9e9ca394464a\n$ printf 'blob 6\\0hello\\n' | sha1sum\nce013625030ba8dba906f756967f9e9ca394464a  -",
+        "highlight_triggers": [
+          {"word": "hash", "action": "reveal_line_1"},
+          {"word": "characters", "action": "reveal_line_2"},
+          {"word": "header", "action": "reveal_line_3"},
+          {"word": "themselves", "action": "reveal_line_4"},
+          {"word": "shared", "action": "highlight_line_4"}
+        ]
+      }
+    },
+    {
+      "id": "seg_04_mechanism_refs",
+      "narration": "Branches are not containers. A branch is a ref, a tiny record holding one commit hash. HEAD usually points at a branch, so committing writes a new commit object and moves that one pointer forward. That is why creating a branch is instant. Deleting a branch does not delete its commits right away either. They linger until garbage collection prunes whatever nothing references.",
+      "visual_state": "architecture_graph",
+      "bgm_mode": "ducked",
+      "visual_payload": {
+        "headline": "Branches are pointers",
+        "diagram_nodes": ["HEAD -> main", "main -> commit C3", "commit C3 -> commit C2", "commit C2 -> commit C1"],
+        "highlight_triggers": [
+          {"word": "ref", "action": "reveal_node_2"},
+          {"word": "commit", "action": "reveal_node_3"},
+          {"word": "HEAD", "action": "reveal_node_1"},
+          {"word": "forward", "action": "highlight_node_2"},
+          {"word": "linger", "action": "reveal_node_4"}
+        ]
+      }
+    },
+    {
+      "id": "seg_05_mechanism_packfiles",
+      "narration": "Whole snapshots sound expensive, so here is the catch. Loose objects are compressed one at a time. During garbage collection, and in every push or fetch, Git packs objects into packfiles and stores similar objects as deltas against each other. So diffs do exist, but only as a storage trick underneath. The model you reason about is still whole snapshots.",
+      "visual_state": "architecture_graph",
+      "bgm_mode": "ducked",
+      "visual_payload": {
+        "headline": "Deltas live in packfiles",
+        "diagram_nodes": ["loose objects -> packfile", "packfile -> delta chains"],
+        "highlight_triggers": [
+          {"word": "packfiles", "action": "reveal_node_1"},
+          {"word": "deltas", "action": "reveal_node_2"}
+        ]
+      }
+    },
+    {
+      "id": "seg_06_proof_catfile",
+      "narration": "Here is the proof in a real repository. Ask Git for the type of HEAD and it answers commit. Print that commit and you get one tree hash, one parent, the author, the committer and the message. Print the tree and you get file modes, object types, hashes and names. Each hash is the address of the object one level down.",
+      "visual_state": "code_focus",
+      "bgm_mode": "ducked",
+      "visual_payload": {
+        "code_snippet": "$ git cat-file -t HEAD\ncommit\n$ git cat-file -p HEAD\ntree 2532dc0f68fbe991cfff017977b9976778534e7e\nparent b80d9cacbe1a2c40aa37138ed30d2fa0eedaf71d\nauthor Ada <ada@example.com> 1790845500 +0000\ncommitter Ada <ada@example.com> 1790845500 +0000\n\nUpdate notes\n$ git cat-file -p HEAD^{tree}\n100644 blob ce013625030ba8dba906f756967f9e9ca394464a\thello.txt\n100644 blob 8ff82333fa5f2870433063e24f7218e7702a078d\tnotes.md",
+        "highlight_triggers": [
+          {"word": "type", "action": "reveal_line_1"},
+          {"word": "commit", "action": "reveal_line_2"},
+          {"word": "Print", "action": "reveal_line_3"},
+          {"word": "tree", "action": "highlight_line_4"},
+          {"word": "tree", "action": "reveal_line_10"},
+          {"word": "names", "action": "reveal_line_12"}
+        ]
+      }
+    },
+    {
+      "id": "seg_07_proof_dedup",
+      "narration": "Now the deduplication. The second commit only changed the notes file. Ask both commits for hello dot t x t, and both trees point at the identical blob hash. One stored object, referenced by two snapshots. Nothing was copied.",
+      "visual_state": "code_focus",
+      "bgm_mode": "ducked",
+      "visual_payload": {
+        "code_snippet": "$ git ls-tree HEAD~1 hello.txt\n100644 blob ce013625030ba8dba906f756967f9e9ca394464a\thello.txt\n$ git ls-tree HEAD hello.txt\n100644 blob ce013625030ba8dba906f756967f9e9ca394464a\thello.txt",
+        "highlight_triggers": [
+          {"word": "both", "action": "reveal_line_2"},
+          {"word": "trees", "action": "reveal_line_4"},
+          {"word": "identical", "action": "highlight_line_4"}
+        ]
+      }
+    },
+    {
+      "id": "seg_08_verdict",
+      "narration": "So stop picturing Git as a stack of patches. It is a database of immutable snapshots, deduplicated by hash, with deltas hidden in the packfiles. Once you see objects and refs, branching, resetting and recovering a lost commit stop being magic. They are pointer moves over a graph that never changes in place. When a rebase goes wrong, open the reflog before you panic. The old commits are still there.",
+      "visual_state": "vibe_drop",
+      "bgm_mode": "full_swell",
+      "visual_payload": {
+        "headline": "Objects never change. Refs move.",
+        "highlight_triggers": [
+          {"word": "immutable", "action": "show_headline"},
+          {"word": "magic", "action": "drop"}
+        ]
+      }
+    }
+  ]
+}

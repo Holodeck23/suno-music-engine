@@ -1,6 +1,6 @@
 # Music-video direction, reference craft and quality resets
 
-Read for an ambitious reference-led video, a rejected draft, or developing a song and film together. Pair with `music-video-production.md` for timing/export and `story-world-video.md` when narrative continuity matters. These are decision aids, not a house style or a promise of reference-level quality.
+Read for an ambitious reference-led video, a rejected draft, or developing a song and film together. Pair with `music-video-production.md` for timing/export and its narrative-continuity section when narrative continuity matters. These are decision aids, not a house style or a promise of reference-level quality.
 
 ## Recover the meaning before choosing the metaphor
 
