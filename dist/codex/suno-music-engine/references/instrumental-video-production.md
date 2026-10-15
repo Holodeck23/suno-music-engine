@@ -39,7 +39,7 @@ Anticipation can use the known future drop: tighten framing or reduce light in t
 
 ## Treatment and rendering choices
 
-Map one motif per musical layer and an evolution across the whole track. Keep the pilot/style-frame/full-film review workflow from the main guide. Human review improves the treatment, but do not add a new approval gate when the user has already delegated the direction and asked for completion.
+Map motifs to musical layers and an evolution across the track. Keep the representative motion proof and whole-film review workflow from the main guide. For a demanding reference or rejected draft, use `video-direction-and-quality.md`; synchronized feature curves alone do not establish compelling imagery. Do not add a new approval gate when the user has delegated direction and completion.
 
 Choose effects for the aesthetic. HDR materials, selective bloom, volumetric light, instancing, reaction-diffusion and raymarched forms are possible techniques, not a mandatory stack. Some remained proposals in the instrumental approach notes; do not describe them all as implemented or tested.
 

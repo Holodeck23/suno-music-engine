@@ -1,6 +1,6 @@
 # Video capabilities shipped with Suno Music Engine
 
-Reviewed 2026-10-14 against the canonical skill, both installed adapters and the Soft Parts, Rectify, Ignition Syntax and All Signal production records. This inventory describes reusable capability coverage, not acceptance or publication of any particular film.
+Reviewed 2026-10-15 against the canonical skill and the Soft Parts, Rectify, Ignition Syntax and All Signal production records, including the rejected Blender kitchen sample. This inventory describes reusable capability coverage, not acceptance or publication of any particular film. Rebuild and verify both runtime installations after changing these sources.
 
 ## Included in Git and both runtime adapters
 
@@ -9,14 +9,18 @@ Reviewed 2026-10-14 against the canonical skill, both installed adapters and the
 | Selected-audio identity, embedded cue extraction, timing flags | `scripts/extract-video-timing.py` and `references/music-video-production.md` |
 | Vocal-stem word timing, cue-window matching and interpolation labels | `scripts/align-lyric-words.py` and the main video guide |
 | Held-first-word correction, prompt bleed, added ad-libs and repeated lines | Main video guide; corrections require inspection and are not all automated by the helper |
-| Reference-video study, visual system, kinetic type and one idea per line | Main video guide |
+| Reference discovery, exact-video credits, close motion breakdown and observed/inferred boundaries | `references/video-direction-and-quality.md` |
+| Song meaning, visible setup/payoff, joint song/story development and remapping the selected take | Direction and quality guide; co-development is proposed, not proven by a completed production |
+| Visual systems, optional kinetic type, phrase-led or line-led shots | Main video guide |
 | Scored-event measurement, absent silences and failed section detection | Main video guide and `references/instrumental-video-production.md` |
 | Form/phrase/beat/texture mapping, tempo drift, stem leakage and noise floors | Instrumental video guide |
 | Musical-time curves, deterministic seeking and simulation checkpoints | Instrumental video guide |
 | Pilot, style frames, full-song shot coverage and frame/range review | Main video guide |
 | HDR/type legibility, light-ground grading, layer order, fit-to-width and burn pacing | Main video guide |
 | GPU verification, chunked export, grain cost, large-file hashing and render identity | Main video guide |
-| Story pass: treatment, beat board, world memory as dated events, diegetic type, ALIVE systems, silhouette characters | `references/story-world-video.md` |
+| Story treatment, boards/animatics, world memory as dated events, optional diegetic type and world systems | `references/story-world-video.md` |
+| Representative motion proofs, acting/contact risks, rejection handling and bounded iteration | Direction and quality guide |
+| Browser/Blender comparisons, actual renderer provenance, snapshot versus animated scene | Story-world and direction guides; renderer implementations remain project-specific |
 | Titles, descriptions, channel bios, rights and AI disclosure | `references/youtube-release.md` |
 
 ## Helper prerequisites and limits
@@ -32,6 +36,14 @@ The skill ships production methods and the two helpers above. It is not a bundle
 The local projects inspected were under `/Users/Shared/repos/content/`: `soft-parts-video`, `rectify-video`, `ignition-syntax-video` and `all-signal-video`. These are local provenance pointers, not portable dependencies. The generalized analysis work in the latter projects has not been consolidated into the skill; copying it would require an explicit implementation review and validation, rather than treating a documentation audit as a tested code migration.
 
 Song audio, stems, rendered videos, private notes and artist-specific release copy belong in durable production storage. They are not reusable skill resources and are not included in its Git repository. The renderer and archive locations can differ by machine; inspect current project configuration rather than reusing a hardcoded personal path.
+
+## Production outcomes and open craft gap
+
+The latest review distinguished a liked Ignition Syntax pilot from unverified acceptance of its full export. Soft Parts export/decode evidence does not establish whole-song sync or approval of every later version. Rectify had analysis and partial visual code, rather than a verified finished video.
+
+All Signal full-v2 used three.js/browser rendering; its Blender comparisons were still tests. The later kitchen sample actually rendered in Blender EEVEE and passed technical export checks, but the user explicitly rejected it as cheap and unimpressive. A renderer switch, extra inserts, saturated lighting and a treatment did not close the creative gap. Preserve those outcomes in the production records; do not promote the kitchen code to a reusable production baseline.
+
+The next proposed craft step is close study of a strong reference sequence followed by an original, representative motion shot. That step has not yet demonstrated a reference-level result. This skill captures the procedure and failed attempts honestly; it does not claim the missing artistic knowledge has already been acquired.
 
 ## Maintenance check
 

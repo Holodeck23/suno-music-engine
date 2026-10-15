@@ -1,51 +1,51 @@
 # Story-world music videos: a place, someone in it, consequences
 
-Read this after `music-video-production.md` when the user wants the video to tell a story or "create worlds" rather than illustrate lyrics, or when a lyric-driven cut has been judged clever but lifeless. Everything in the main guide (audio as timing authority, word timing, scored events, deterministic export) still applies.
+Read this after `music-video-production.md` for narrative continuity. For a rejected draft or ambitious reference, also read `video-direction-and-quality.md`. The city and character experiments below produced technical lessons, but their full-film result was not creatively accepted. Audio timing and deterministic export still apply.
 
 ## Why a polished lyric video can feel dead
 
-A cut that gives every line its own visual pun is a sequence of slides: nothing carries over, nobody lives there, and nothing that happens has a consequence. Viewers read that as motion graphics, however well made. The videos that land as a *world* have three things a slide cut lacks: a persistent place, someone in it, and events that change it for good. Adding effects does not fix this. A story pass does.
+A cut with a separate pun for every line can feel like slides when nothing carries over. Narrative continuity can come from a character, recurring object, connected places or consequences that persist. A treatment helps expose missing causality, but cannot guarantee strong imagery or performance. A busy world can still feel lifeless if shots lack a designed subject.
 
 ## Order of work: story before shot list
 
-0. **Pull the bar first.** If the user names a video or channel as the standard, download it and tile its frames (one every five seconds) before writing anything, and keep that sheet beside every beat board you show. In one production the reference frames were pulled only after a full day of building, and they showed in one glance what the build had missed: a designed subject in every frame, a saturated palette and frequent close-ups.
-1. **Treatment, one page.** Logline (one sentence: who, what they want, what changes). The world. One protagonist. The rules the film obeys. The story mapped onto the song's *measured* sections, one verb per section. Write it before any code and keep it in the production folder.
-2. **Beat board.** One still per story beat across the whole song, rendered from the real engine, not drawn. This is where the story is judged cheaply.
-3. **Animatic.** The whole song in motion, rough but in sync, scrubbable in the preview so notes are about story, not polish.
-4. **Look development, then the final render.**
+0. **Study the target.** Reuse saved references and closely inspect a useful moving sequence. A contact sheet helps compare subject, palette and scale, but misses acting and transitions. Keep observations beside the production board.
+1. **Treatment.** State who or what changes, the visible attempt and its consequence, and the intended feeling. Map dramatic beats to measured sections, or draft song and story together if the recording is still open. Save it in the production folder.
+2. **Beat board.** Sketch or render key beats cheaply. Real-engine stills verify feasibility; drawings can answer story questions before assets exist. Do not confuse either with motion proof.
+3. **Risky shot and animatic.** Prove the hardest representative action early. Assemble rough timing across the song to assess setup, escalation, quiet and payoff before expanding final assets. Choose the order around the actual risk rather than requiring a full rendered animatic first.
+4. **Look development and final render.** Expand the direction supported by the evidence and authorized by the user. Rejection calls for a creative reset, not automatic completion of the same premise.
 
-Skipping steps 1–3 is how a production polishes easily but never gets a story. In one production the slide cut reached its full render with no treatment; the story pass that followed started from the treatment and had a 27-shot beat board covering the full song in a single working session.
+## Options for narrative continuity
 
-## Rules that make it read as one world
-
-- **One place, travelled, not cut between.** The camera moves through a single connected space (a room inside a building inside a city) instead of cutting between unrelated diagrams. A continuous move that crosses spaces (pulling back down a street, through a window, behind the character) does more than any transition effect.
+- **Connected places or recurring subjects.** A camera travelling through a connected space can establish geography; motivated cuts between different places can also carry a story. Choose around the action rather than imposing a one-room or continuous-camera rule.
 - **Memory as dated events.** Model the story as events with times: a sign switched on, a sweep reaching it at `t0 + distance / speed`, a reboot, a final kill. The state at time `t` is "every event at or before t", computed from `t` alone. The world remembers (what was killed stays dead) and every frame still renders out of order, which the deterministic exporter requires.
-- **Words inside the world, never on top of it.** Lyrics go on surfaces: building faces, a monitor typing them, window glass, the street, banners across the road, ink on the ground. Each surface obeys word timing, so a word appears where it lives at the moment it is sung.
-- **Colour story with exactly one meaning per colour.** For example, loud saturated colours mean the thing being rejected, one accent colour means the thing chosen, and a warm colour is held back for the ending. Introduce the held-back colour once, late.
+- **Type with a role.** Diegetic words can live on signs, screens, glass or ink; stage typography or overlays can also suit the film. Keep sung words timed and legible without making every scene an explanatory card.
+- **Deliberate colour development.** A limited palette or a held-back colour can support a turn. The story need not assign exactly one meaning to every hue.
 - **An act break can invert the whole palette.** Draining a night city into a white paper world, where the character becomes an ink silhouette, marked the bridge more strongly than any cut.
-- **The ending answers the opening.** The first and last shots should frame the same place, now changed.
+- **The ending pays off the setup.** Reframing the opening place after a change is one option; a new image can also complete the arc.
 
-## ALIVE: a checklist, each item a pure function of time
+## Optional world systems, each a pure function of time
 
-When the user says the video must feel *alive*, turn it into named systems, not adjectives:
+Select only systems the shot needs. Crowd, traffic and weather increased activity in one experiment without establishing a compelling film. Performance and consequences deserve priority over adding simulation layers:
 
 - **A crowd** on sidewalks: position = phase + speed × t, wrapped along a lane. Give them a state the story can change: heads down with lit phones while the hype holds, heads up after the protagonist's act.
 - **Traffic** as paired head/tail lights on lanes, braking (tail lights flaring) on the kick.
 - **Weather.** Rain anchored to the world and wrapped around the camera (`x = camX − B/2 + mod(seedX·B − camX, B)`), tinted by the light it falls through.
 - **Other lives in windows.** Some lit windows switch on and off on their own slow clock; a few flicker like a TV.
 - **Things that move on their own.** Drones on orbits, which can fall when the story hits them (a free fall from the event time) and stay where they fell.
-- **The character never freezes.** Breath, weight shift, slow head turns under every pose.
-- **A camera with a body.** Layered-sine handheld drift, a small shove on the kick, and moves that ease in and settle.
-- **Signs animate.** Pulse, LED rows, glitch tears. Nothing is a static poster.
+- **Character movement.** Breath and weight shifts can sustain a held pose; motivated stillness can be stronger than constant idle movement.
+- **Camera weight.** Easing, settling and restrained drift can support action; a locked camera may better stage a reveal. Do not add a shove to every kick by default.
+- **Signs.** Pulse, LED rows or glitch tears when motivated. A static sign can leave attention on the action.
 
 ## A procedural character that holds up
 
-A jointed figure of capsules (hips, spine, chest, neck, head, two-segment limbs) posed by blending named poses (stand, type, lean back, sit) plus a procedural walk cycle driven by distance walked is enough, **if it is lit as a silhouette.** Posture carries the acting. Faces are not needed.
+A jointed capsule figure with blended poses and a distance-driven walk cycle can serve a distant silhouette or intentionally graphic style. It is not a general solution for hero acting, hands or tactile close-ups. Test posture, silhouette, contact and weight at the intended shot scale; use authored shapes, a suitable rig or another style when the proxy fails.
 
 - Rim term around `pow(1 − N·V, 4)` at low gain. A strong or wide rim turns the figure into a glowing mannequin; this happened and read as a toy.
 - On a light ground, render the figure as flat ink with a soft blob shadow.
 
-## Failures observed, and what fixed them
+## Local technical failures and attempted corrections
+
+The following fixes address specific rendering defects. They did not establish creative acceptance of the resulting film. Numerical values depend on the scene's scale, exposure and materials.
 
 - **Grid cities hide the faces a street camera needs.** Looking down an avenue, every billboard mounted flat on a facade is seen edge-on or blocked by the block in front. Fix: blade signs hung out from side faces and facing along the street, and banners strung across the road for lyrics. Also open a view corridor (lower the blocks directly in front of a hero window) so the character looks *out* over the city rather than into a wall 12 m away.
 - **Check the camera's line of sight against its own building.** A camera on a roof looking down at targets in the street saw only the roof surface and rendered a black frame. Move it to the edge.
@@ -57,26 +57,26 @@ A jointed figure of capsules (hips, spine, chest, neck, head, two-segment limbs)
 
 ## Probing cheaply
 
-Render four or so stills across the riskiest shots first, tile them into one image, fix, and only then render the full beat board (one still per shot). Each probe takes about a minute, so the bad first draft happens where the user never sees it.
+Probe a few risky frames before a large batch; measure cost on the current scene. Use an early short motion render for acting and contact, which stills cannot validate. Save both the probe and its conclusion so a later session does not repeat it.
 
 Report states honestly: a beat board is stills. It does not show whether motion, sync or pacing work. Say what has and has not been seen in motion.
 
-## Renderer choice: test it on the same frame before switching
+## Renderer choice: isolate cost and image quality
 
-Before moving a production to a heavier renderer, export the exact world and camera and render the same frame in both. One such test (1080p, Apple M5, a night city of plain box towers, about 500 signs):
+An identical-world/camera comparison can isolate renderer differences, while a target-native representative shot tests the candidate's strengths. One same-frame test (1080p, Apple M5, a night city of plain box towers, about 500 signs) observed the following; remeasure rather than reuse these as budget estimates:
 
-- Blender EEVEE at 32 samples: about 2 s per frame after shader compilation, so a three-minute film renders in hours.
-- Blender Cycles at 256 samples on the Metal GPU: about 3 minutes per frame, which is hundreds of hours for a full song. That only makes sense for stills or a few hero shots.
-- On identical box geometry, neither Blender render looked better than the browser renderer. Better light has nothing to catch on flat boxes. The step up comes from modelled assets (recessed windows, ledges, rooftop clutter, a rigged character), and those can also be loaded as glTF into a browser engine.
+- Blender EEVEE at 32 samples: about 2 s per frame after shader compilation.
+- Blender Cycles at 256 samples on the Metal GPU: about 3 minutes per frame. That test would be expensive to expand; it does not establish a universal Cycles cost.
+- On that box geometry, neither Blender still showed a persuasive quality improvement. This is evidence about the test, not the engine's ceiling. Modelled detail and suitable materials give lighting more to describe; glTF assets can also be used in a browser engine. Acting, composition and editing remain separate decisions.
 - Blender-specific traps seen in that test: the AgX view transform turns saturated neon pastel (Khronos PBR Neutral or Standard keeps the hue); an area light placed just in front of a sign blows it out; world-volume haze over-scatters fast (density around 0.002 to 0.003 at city scale); depth of field at a wide aperture blurs the nearest signage text.
 
 ## Measure the reference before polishing: pace, palette, close-ups
 
-Before an art pass, pull the reference video's frames at a fixed interval (one every five seconds, tiled) and compare them side by side with your own contact sheet. In one production this showed three gaps that no amount of polish to existing shots would have closed:
+Compare existing reference and draft sheets to identify scale, palette and pace gaps, then examine the relevant moving shots. In one production this motivated the following interventions. The later full export was still judged unsatisfactory, so these are attempted improvements rather than a proven quality recipe:
 
-- **Pace.** The reference cut every three to five seconds. The first story pass averaged about seven seconds a shot, with some running over fourteen. A cheap fix that keeps continuity: add *inserts* with an explicit `[from, to)` window over the running shot. The underlying shot keeps its own clock, so cutting back lands where the move would have been anyway. About 30 inserts took a 188-second film from 27 to about 57 cuts.
+- **Pace.** Sparse reference sampling suggested frequent changes, roughly three to five seconds; it was not a frame-accurate edit map. The first story pass averaged about seven seconds a shot, some over fourteen. Inserts with an explicit `[from, to)` window keep the underlying shot's clock continuous when cutting back. About 30 inserts took a 188-second film from 27 to about 57 cuts; more cuts alone did not solve its quality gap.
 - **Close-ups of objects, with depth of field.** The reference keeps cutting to tactile things (a mug, a phone screen, notes, a button), each with a soft background. Inserts like the monitor's text, hands on the keyboard, a lamp's bulb catching, steam off a plate, ink being written and a sign dying gave the world scale and texture that wide shots alone never did. Enable depth of field only in shots that name a focus distance.
-- **A deliberate palette.** The reference is saturated (one dominant hue, one accent, light in haze). The first pass was dark grey with coloured dots. What fixed it: haze tinted by the light sources instead of black fog, a split-tone grade (cool shadows, warm or hot highlights), a little more saturation, and lighting that has to *read*, not just exist.
+- **A deliberate palette.** Studied reference frames used saturated light and clear subjects; the first pass was dark grey with coloured dots. The attempt added source-tinted haze, a split-tone grade and saturation. These changed the image, but did not establish that the film met the reference standard.
 
 ## Beams and other visible light
 
@@ -88,4 +88,4 @@ Before an art pass, pull the reference video's frames at a fixed interval (one e
 ## Characters and crowds
 
 - A rigged, animated stock character (for example the X Bot mannequin from the three.js examples, which comes from Mixamo; check the licence for your use) driven at an explicit clip time (`action.time = f(t)`, then `mixer.update(0)`) stays deterministic. Pin the hips' root motion so the story owns position. Seated, typing or leaning poses can be laid over the idle clip as per-bone local rotations, with signs found by test renders.
-- Crowds by level of detail: rigged clones (`SkeletonUtils.clone`) for the dozen or so people nearest the camera, simple silhouettes for everyone else. Capsule people look crude only up close.
+- Crowds by level of detail: rigged clones (`SkeletonUtils.clone`) for nearby people, simpler silhouettes further away. Test the actual camera; distance does not automatically make a crude pose convincing.

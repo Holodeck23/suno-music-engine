@@ -9,10 +9,10 @@ A platform-agnostic Agent Skill for AI music production with Suno v6. The portab
 5. **Genre Fusion** — Blend genres with intent (the Daft Punk / Radiohead / Kendrick playbook)
 6. **Personal Translation** — Turn a person's life patterns and emotional landscape into mapped instrumental architecture
 7. **V6 Editing and Multi-Input Workflows** — Make atomic section/lyric edits, mash up authorized sources, and compose from text, audio, images, or video
-8. **Music Videos** — Build and verify animated videos against the selected recording and measured timing
+8. **Music Videos** — Develop song and story together, study references, prove demanding actions, and build/verify videos against the selected recording
 9. **YouTube Releases** — Prepare titles, descriptions and channel bios with grounded rights and AI disclosure guidance
 
-Reference files cover Suno formatting, music theory, album sequencing, personal translation, lyric-driven and instrumental video production, rendering lessons, and YouTube release preparation. See [video capabilities](docs/video-capabilities.md) for the bundled tools and implementation boundaries.
+Reference files cover Suno formatting, music theory, album sequencing, personal translation, video direction and quality resets, lyric-driven and instrumental production, rendering lessons, and YouTube release preparation. See [video capabilities](docs/video-capabilities.md) for bundled tools, implementation boundaries and observed outcomes.
 
 ---
 
@@ -47,6 +47,7 @@ suno-music-engine/
 │   ├── music-video-production.md         ← Audio timing, animation, rendering and verification
 │   ├── instrumental-video-production.md  ← Stems, tempo drift and music-driven animation
 │   ├── story-world-video.md              ← Story pass: a world, a character, consequences
+│   ├── video-direction-and-quality.md    ← Reference craft, motion proofs, rejection and song/story co-development
 │   └── youtube-release.md                ← Publishing copy, commercial-use rights and AI disclosure
 ├── scripts/
 │   ├── extract-video-timing.py            ← Embedded lyric cues and audio identity

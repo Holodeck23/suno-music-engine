@@ -1,14 +1,10 @@
 ---
 name: suno-music-engine
 description: >
-  The complete AI music production system — from mapping existing songs into structural blueprints, to composing original vocal tracks and instrumentals for Suno AI, to architecting cohesive albums
-  and EPs with proven sequencing psychology. Use this skill whenever the user mentions Suno, AI music, song creation, instrumentals, album planning, song mapping, music production, beat making, track
-  breakdowns, concept albums, album sequencing, EP structure, or any request involving turning musical ideas into Suno-ready output. Also trigger when the user says things like "map this song," "write
-  me a song like X," "create a Suno prompt," "make an instrumental," "plan an album," "help me sequence my tracks," "I want to make something that sounds like," "compose something," "write me a
-  track," or describes any sonic vision they want realised through AI music generation. This skill replaces and unifies the former suno-song-architect and suno-instrumental-composer skills into a
-  single comprehensive system. It covers the full pipeline from analysis through composition through album-level architecture. Includes Suno v6, v6-wild, and v6-mini model routing, natural-language
-  edits, multimodal references, Variety control, Max Mode guidance, and code-driven music-video production from a selected song, plus YouTube descriptions, channel bios, commercial-use guidance, and
-  AI disclosure for releasing that music.
+  Create and analyse music for Suno: song mapping, original vocal songs and instrumentals, genre fusion, personal lyrics, album/EP sequencing, v6 model routing, editing and multi-input prompts. Use
+  for Suno prompts, lyrics, track breakdowns, composition and AI music production. Also use for code-driven music videos, selected-audio and word timing, instrumental/stem-driven animation, narrative
+  treatments, developing song and visual story together, reference-led direction, rejected-video quality resets, Blender/browser rendering and export verification. Includes YouTube titles,
+  descriptions, channel bios, commercial-use guidance and AI disclosure for releasing the music. Replaces suno-song-architect and suno-instrumental-composer.
 ---
 
 # Suno Music Engine
@@ -31,6 +27,7 @@ Read the request and route to the appropriate mode. Multiple modes can be combin
 | "Edit / replace / fix one part of this song" | **V6 EDITING** | This file §7 + `references/suno-formatting.md` |
 | "Mash up / sample / combine these songs, clips, images, or video" | **V6 MULTI-INPUT** | This file §7 |
 | "Animate this song / make a music video / add a video component" | **MUSIC VIDEO** | `references/music-video-production.md` |
+| "Write the song and story together / match this video's quality / this draft looks cheap" | **MUSIC VIDEO: DIRECTION** | `references/video-direction-and-quality.md` + `references/music-video-production.md` |
 | "Animate an instrumental / make visuals follow the stems or beat" | **MUSIC VIDEO: MUSIC-DRIVEN** | `references/music-video-production.md` + `references/instrumental-video-production.md` |
 | "Make the video tell a story / create a world / feel alive", or a lyric cut judged lifeless | **MUSIC VIDEO: STORY WORLD** | `references/music-video-production.md` + `references/story-world-video.md` |
 | "Write a YouTube description / channel bio / can I release this Suno track?" | **YOUTUBE RELEASE** | `references/youtube-release.md` |
@@ -71,8 +68,8 @@ If any check fails, fix it and re-count BEFORE delivering. Do not deliver and ap
 
 For video production from a selected song, read `references/music-video-production.md`.
 For instrumentals or per-stem animation, also read `references/instrumental-video-production.md`.
-For a video that should tell a story or build a world, also read `references/story-world-video.md`:
-treatment and beat board come before any shot list.
+For narrative continuity, read `references/story-world-video.md`. For reference-led quality,
+a rejected draft or song/story co-development, read `references/video-direction-and-quality.md`.
 See `docs/video-capabilities.md` for what is bundled versus project-specific.
 The accepted audio determines timing; inspect embedded lyric tracks before arranging
 transcription. Deliver a watchable pilot and support timestamped feedback before
@@ -448,7 +445,7 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 
 **User provides multiple sources →** Assign each source a role and timestamp → Define assembly hierarchy and preservation constraints → Deliver a v6 Simple Mode instruction
 
-**User wants a music video →** Read music-video-production → Inspect selected audio and timing → Build and review a pilot → Iterate with timestamped feedback → Expand and verify the render
+**User wants a music video →** Read music-video-production and relevant direction guide → Recover song meaning and latest verdict → Inspect reference and measured audio → Prove the risky action in motion → Expand within the authorized direction and verify the render
 
 **User wants to release a track on YouTube →** Read youtube-release → Ground the copy in the selected song and artist profile → Deliver a title, video description and channel bio as needed → Explain applicable rights and AI disclosure without claiming publication
 
@@ -470,4 +467,5 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 
 - **`references/instrumental-video-production.md`** — Form/phrase/beat/texture mapping, stem leakage, tempo drift, offline feature contracts, musical time and instrumental visual treatments. Read for instrumentals or music-driven animation.
 
-- **`references/story-world-video.md`** — Story pass for music videos: treatment, beat board and animatic before polish; one persistent world with memory as dated events; lyrics on surfaces in the world; an ALIVE checklist (crowd, traffic, weather, other lives, a breathing character, a camera with weight); silhouette-lit procedural characters; observed failures in grid cities, lighting, volumetrics and type. Read when the video should tell a story or a lyric cut feels lifeless.
+- **`references/story-world-video.md`** — Narrative treatment, boards, animatics, persistent consequences and optional world systems; technical lessons from city, character, lighting and renderer experiments. Read for story continuity; those experiments do not establish creative acceptance.
+- **`references/video-direction-and-quality.md`** — Song meaning, close reference analysis, original motion proofs, renderer provenance, rejection handling, bounded iteration and developing song/story together. Read for ambitious references, quality resets or co-development.

@@ -2,7 +2,7 @@
 
 Use this mode when the user wants an animated video for an accepted song. It is separate from using a video as a musical reference in Suno. Preserve the user's chosen recording and visual direction; do not regenerate the song to simplify animation.
 
-For instrumentals or detailed per-stem animation, also read `instrumental-video-production.md`. For a video that should tell a story or build a world rather than illustrate lines, read `story-world-video.md` before designing shots. For a list of bundled helpers and project-specific implementations, see `../docs/video-capabilities.md`.
+For instrumentals or detailed per-stem animation, also read `instrumental-video-production.md`. For narrative continuity, read `story-world-video.md`. For ambitious references, a rejected draft or developing music and film together, read `video-direction-and-quality.md` before designing another pass. For bundled helpers and project-specific implementations, see `../docs/video-capabilities.md`.
 
 ## Where the work lives
 
@@ -39,19 +39,21 @@ Then design to the located facts. An absent event is not faked with a visual: on
 
 ## Study the reference, then set a design system
 
-When the user points to videos they admire, inspect actual frames before designing: a contact sheet at one frame per 8 seconds, a few full frames, and a measured cut rate (`select='gt(scene,0.3)'`). The channel the user studied (Claude-made music videos, credited three.js/TypeScript and Blender/Python) works through:
+When the user points to videos they admire, inspect the exact reference and its credits. A sparse contact sheet and scene-change detector help locate passages; close motion study establishes how they work. Follow `video-direction-and-quality.md` for that breakdown. Different films by one creator can use different engines. Record creator-confirmed tools separately from inferred techniques.
+
+The following are options observed in lyric-led reference work, not requirements for every film:
 
 - **Typography as the main image.** Words appear as they are sung, with the active word in the accent colour, upcoming words dim or absent and sung words settled. This requires word timing.
-- **One visual idea per lyric line.** Each line becomes a diagram, interface or object that literalises a double meaning, for example a spending line rendered as tokens with token IDs. Captions over an illustrated scene are weaker than type that carries the scene.
+- **Line-led visual ideas.** A line can become a diagram, interface or object that carries a double meaning. This can suit a graphic treatment; a film that promises acting or narrative needs actions that develop across lines. Literalising every line can become a slide deck.
 - **A strict system.** One dark ground, one accent colour, a display face plus a monospace face for small interface labels, and consistent framing chrome. The accent can carry the arc (cold before a turn, warm after).
-- **Density.** A new idea every 2 to 4 seconds in busy passages (measured 1.8 to 3.5 seconds average shot length). Calmer pieces use moves and morphs instead of hard cuts.
+- **Density.** Some studied busy passages changed ideas every 2 to 4 seconds. Use the selected reference and musical phrase to judge pace; cut counts are diagnostic, not a quality target. Calmer pieces can use sustained action, moves and morphs.
 - **A review editor built for the project.** The creator watches drafts and marks frames and ranges for change.
 
-Lyric-driven type and music-driven motion are complementary, not alternatives. Let words drive the typography and per-line ideas. Let stems and the beat grid drive light, camera, impacts, particles and any interface readouts. Readouts that show real values (bar count, drum envelope as pressure, bass envelope as torque) make the frame look like it is listening.
+Lyric-driven type and music-driven motion can complement each other. Where the treatment uses them, let words drive type and measured musical events motivate light, camera and impacts. Real analysis can drive interface readouts, but explanatory graphics and constant beat pulses do not substitute for compelling shot design.
 
 ## Pilot before full-song production
 
-Write a brief that establishes palette, characters, props, world, focal actions and transitions. Map the opening pilot to actual cue times. If the chosen pilot section is shorter than the pilot target (a 13 s chorus against a 40 s target), extend it into the neighbouring sections that show the film's arc turning, for example the pre-chorus build and the post-chorus return of the noise, rather than padding. Around 20-30 seconds is a useful first scope, not a universal requirement. Build something the user can watch and critique before filling the whole song. Once the user accepts the experiment or delegates the artistic choices and asks you to finish, proceed with the full film without imposing another approval round.
+Write a brief that establishes meaning, palette, characters, props, world, focal actions and transitions. Map the pilot to actual audio events. Choose a short scope that proves the riskiest action; a few seconds may suffice, while an arc may need 20–30 seconds or neighbouring sections. Avoid padding to a fixed duration. Build something watchable before filling the song. Once the user accepts that direction or delegates completion, proceed without imposing another approval round. Acceptance applies to the version and scope reviewed; an explicit rejection stops expansion of that direction.
 
 Choose tools for the intended look: three.js for procedural 3D, Canvas/p5 for drawn 2D, Blender/Python when offline scene rendering is preferable. A toolkit or instruction document can help, but no particular plugin, external image model or video API is inherently required.
 
@@ -59,7 +61,7 @@ Evaluate every frame from absolute audio time. Avoid accumulated simulation stat
 
 Contact sheets catch framing and composition; motion playback catches unreadable actions, accidental freezes, bad cuts and synchronization. Use both. A passed build or attractive still image does not establish that the video works at playback speed.
 
-Render style frames across the pilot before any motion render; they are cheap and catch most look problems. Problems observed on the first style pass of an HDR pipeline, with the fixes that worked:
+Use style frames to catch framing and surface problems cheaply, then test motion early enough to expose weak acting, contact and transitions. Problems observed on the first style pass of an HDR pipeline, with local technical fixes:
 
 - **Bloom swallows the type.** Push only accent-coloured pixels into HDR, set the bloom threshold at true overexposure (1.0), and keep white and neutral type below it.
 - **Particles near the lens become a white blob.** Cap point size and keep emitters out of the near field. Use moderate additive intensity.
@@ -81,7 +83,7 @@ Light-ground (paper) systems need their own versions of the HDR rules:
 
 ## Extending a pilot to the full song
 
-Write a shot table that covers every second: one shot per sung line, plus music-driven shots for instrumental stretches (intro, solo, breaks). Make it gapless by construction (each shot runs until the next one starts) so no second can fall through to a fallback. Give each shot an optional style-frame time for shots whose idea lands at one moment (final hits, a lock-on), and let the renderer emit one frame per shot as a contact sheet. Instrumental shots can visualise real analysis: an engine firing on drum onsets, a live stem mixer, a scrolling trace of the lead stem. Carry an arc across the film: a colour story (cold before the turn, warm after) and an ending that answers the opening. Render a style frame from every shot across the whole song, in one contact sheet, before the long render.
+Write a shot table covering every second, including instrumental stretches. Shots can span multiple lines or split a phrase according to the action; one shot per line is an option for graphic treatments. Make coverage gapless so no second falls through to an accidental fallback. Give each shot an optional style-frame time for its key reveal and emit a whole-film contact sheet. Instrumental passages may use performance, story action or analysis-driven imagery. Carry a deliberate arc and a payoff that follows from the premise. Check the whole-film board and rough timing before the expensive render, while retaining early motion proofs for risky shots.
 
 ## Make direction specific and portable
 
@@ -118,4 +120,4 @@ Once the user wants to publish the finished video, read `youtube-release.md` for
 
 ## Improve the skill from the experiment
 
-Record demonstrated failures and the correction that worked. Add portable guidance after observing behavior; keep song-specific media, private stories and generation logs out of reusable skill references. For song deliveries, include the selected model and a proposed control preset, conditional on controls actually available. Identify suggested slider values as untested starting points until auditioned.
+Record the failed version, attempted correction, technical result and latest user verdict separately. Label a proposed remedy as unproven until reviewed; technical improvement does not imply creative acceptance. Keep song-specific media, private stories and generation logs out of reusable skill references. For song deliveries, include the selected model and a proposed control preset, conditional on available controls. Identify suggested slider values as untested until auditioned.
