@@ -1,5 +1,10 @@
 # Suno v6 Upgrade Audit
 
+> Historical audit of the former `suno-music-engine`, kept as a record. The YouTube lesson engine keeps
+> the v6 model routing, Variety, Max Mode, editing and multi-input guidance for background music
+> (`definition.md` §4, `references/bgm-suno-scoring.md` §11). The mapping, lyric and album frameworks
+> listed below were retired in the 2026-10-15 refactor and remain in the `main` branch history.
+
 Audited 2026-09-11 against Suno's official v6 announcement and FAQ.
 
 ## Verdict

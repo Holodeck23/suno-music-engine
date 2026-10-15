@@ -1,3 +1,0 @@
-interface:
-  short_description: 'Create and analyse music for Suno: song mapping, original'
-  default_prompt: Use $suno-music-engine to ...

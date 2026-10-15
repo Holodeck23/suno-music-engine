@@ -4,5 +4,8 @@ USER-CONCEPTS.md
 # Polyskill local build state
 .polyskill/
 
+# Python bytecode
+__pycache__/
+
 # OS junk
 .DS_Store
