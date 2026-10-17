@@ -54,6 +54,8 @@ Separate **engine plumbing** from **visual vocabulary**:
   - High-density GPU-instanced megastructures (`THREE.InstancedMesh` with custom vertex/fragment displacement shaders, 10,000–100,000 reactive instances);
   - Physical/topographical audio landscapes, cymatic fluid/particle fields, or silhouette/cel-shaded/brutalist architectural worlds;
   - Kinetic typography or diegetic world-space projection mapping that looks nothing like a 2D code editor card deck.
+- **Never inherit a rejected visual metaphor when changing renderers (2026-10-17):** Rewriting a scene from offline Blender to real-time GLSL SDF raymarching does not change the film if both versions depict the same rejected premise (e.g., an 8-piece dark shell opening around an orange/copper core surrounded by floating debris). The viewer judges the subject and metaphor on screen, not the shader pipeline behind it. When a previous attempt on a track was rejected, throw away its metaphor, silhouette, and colour palette completely.
+- **Negative space outranks visual busyness (2026-10-17):** Stacking a displaced core + segmented shell + spinning torus rings + 700 flying debris shards + floor rings + corner HUD text + oscilloscope in the same frame reads as cluttered screensaver noise. Pick **one** hero visual mechanism with bold negative space (`60–80%` calm dark ground) so every musical change reads at a glance.
 - **State the visual leap up front** before writing scene code: name what this film is doing that the previous film did not, and prove that leap in a short 20–30 second 1080p60 pilot before committing to a full-length render.
 
 ## Prove the difficult part cheaply
