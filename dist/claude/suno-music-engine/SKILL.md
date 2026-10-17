@@ -59,6 +59,7 @@ Suno publishes v6-specific limits.
 7. Verify the style prompt is single-line and comma-separated.
 8. If instrumental: verify "instrumental, no vocals, no spoken words" appears in style prompt AND first metatag.
 9. Keep metatags CLINICAL. Suno's copyright filter is a fuzzy lyric-matcher: vivid/poetic/title-like phrases (similes, metaphors, "weightless," "torn to pieces," famous quotes) get matched as copyrighted lyrics and rejected even inside brackets. Use technique/dynamics/tempo language only. Emotion comes from the musical CHOICES, not evocative words Suno cannot play. See `references/suno-formatting.md` §9 and §17.
+10. If written against a reference song or video: run `python3 scripts/check-lift.py REFERENCE.(txt|vtt|srt) LYRICS.txt` and confirm **zero substantive 3-gram overlap** (ignoring n-grams with ≥2 function words). State the pass result. (2026-10-16: five lines — including the literal opening bookend line — were lifted from *LGTM* into `"Which One of You"` and caught by the operator by ear, not the process.)
 
 If any check fails, fix it and re-count BEFORE delivering. Do not deliver and apologise after — fix it first.
 
@@ -71,10 +72,7 @@ For instrumentals or per-stem animation, also read `references/instrumental-vide
 For narrative continuity, read `references/story-world-video.md`. For reference-led quality,
 a rejected draft or song/story co-development, read `references/video-direction-and-quality.md`.
 See `docs/video-capabilities.md` for what is bundled versus project-specific.
-The accepted audio determines timing; inspect embedded lyric tracks before arranging
-transcription. Deliver a watchable pilot and support timestamped feedback before
-building the entire video. `scripts/extract-video-timing.py` provides local extraction;
-`scripts/align-lyric-words.py` turns line cues into word timing for kinetic typography.
+The accepted audio determines timing; before arranging transcription, inspect Suno `.m4a` exports for an embedded `mov_text` subtitle stream (`ffprobe -v error -show_streams song.m4a | grep -E "codec_name|codec_type"`) and extract it directly (`ffmpeg -v error -i song.m4a -map 0:s:0 lyrics.srt` or `scripts/extract-video-timing.py`). Deliver a watchable pilot measured against the reference (`scripts/measure-frame-look.py`) and support timestamped feedback before building the full video; for kinetic typography, acoustically align word timings (`analysis/align.py` in `mexicat/pdoom-video` or `scripts/align-lyric-words.py`).
 
 For every new vocal-song delivery, state the selected model and a concise proposed
 control preset if the user has those controls. Distinguish proposed settings from
@@ -468,4 +466,4 @@ ASSEMBLY: explain timing, hierarchy, transitions, and what must remain unchanged
 - **`references/instrumental-video-production.md`** — Form/phrase/beat/texture mapping, stem leakage, tempo drift, offline feature contracts, musical time and instrumental visual treatments. Read for instrumentals or music-driven animation.
 
 - **`references/story-world-video.md`** — Narrative treatment, boards, animatics, persistent consequences and optional world systems; technical lessons from city, character, lighting and renderer experiments. Read for story continuity; those experiments do not establish creative acceptance.
-- **`references/video-direction-and-quality.md`** — Song meaning, close reference analysis, original motion proofs, renderer provenance, rejection handling, bounded iteration and developing song/story together. Read for ambitious references, quality resets or co-development.
+- **`references/video-direction-and-quality.md`** — Song meaning, close reference analysis, original motion proofs, renderer provenance, rejection handling, bounded iteration and developing song/story together. Also: measuring cut harshness against the film's own mean before shipping, why a limitation named in a review is not a discharged defect, and treating the frame sequence as the master so a quality complaint is answered by re-encoding rather than re-rendering — including per-channel encode verification, which a full-decode/hash check cannot see. Read for ambitious references, quality resets, co-development, or any viewer report of "glitches".

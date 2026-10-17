@@ -213,6 +213,9 @@ For instrumentals, the lyrics field contains ONLY bracketed metatags — no sung
 - Distill the chorus to its shortest possible phrase. 3-5 words maximum, repeated 2-4 times.
 - Designed for crowd singalong.
 
+### Spoken-Word Handling (Intros, Outros, Deadpan Talk-Sung)
+- **Remove ambiguous sentence-boundary words rather than repunctuating (2026-10-16):** Suno mis-splits ambiguous words sitting across spoken sentence boundaries. `"Morning all. Short update on the migration."` was sung as `"Morning. All short update on the migration."` Repunctuating does not fix the prosody; delete the ambiguous boundary word (`"Morning. Small update on the migration."`).
+
 ---
 
 ## 7. Production Descriptors That Work
@@ -298,6 +301,13 @@ Cinematic orchestral, [mood], instrumental, no vocals, no spoken words, [lead in
 [Dominant genre] with [secondary genre] elements, [mood], [vocal or instrumental tag], [instrument from genre A with character], [instrument from genre B with character], [unified production aesthetic], spacious, [KEY], [BPM]
 ```
 
+### The Chirpy-to-Dirty Style Dial (Satirical / Disco-Punk / Talk-Sung, verified 2026-10-16)
+When a funky or satirical track comes out too cheerful and glossy:
+- **Remove:** `upbeat indie pop`, `bright polished studio mix`, `warm analog synth pads`.
+- **Add:** `overdriven/fuzz bass`, `saturated drums through compressed room mics`, `distorted clavinet`, `analog tape saturation`, `disco punk`, and place `no gloss, no polish` at the **tail** of the style prompt (Suno weights the tail as a corrective).
+- **Vocal shift:** Move from `"deadpan"` to `"deadpan talk sung, dry detached and sneering"` — a bored delivery does most of the work.
+- **Recorded side effect:** On `"Which One of You"` (2026-10-16), applying this dial shifted the generated key from `Eb major` to `G# minor`, which is usually desirable for satire.
+
 ---
 
 ## 12. Common Failure Modes and Fixes
@@ -325,6 +335,10 @@ Cinematic orchestral, [mood], instrumental, no vocals, no spoken words, [lead in
 
 ### "Suno-isms" — overuse of words like "neon," "echo," "shadow"
 **Fix:** Use highly concrete, specific imagery in lyrics. Replace abstract terms with sensory detail. The AI defaults to its training biases when given vague input.
+
+### Spoken sentence boundary mis-split ("Morning. All short update...")
+**Cause:** Suno re-groups ambiguous trailing/leading words across sentence periods in spoken-word or talk-sung lines (`"Morning all. Short update on the migration."` sung as `"Morning. All short update on the migration."`, 2026-10-16).
+**Fix:** Delete the ambiguous word (`"Morning. Small update on the migration."`) rather than repunctuating.
 
 ### "Your lyrics contain copyrighted material" on an instrumental
 **Cause:** Suno scans the lyrics field with a FUZZY lyric-matcher. Vivid, poetic, or title-like phrases inside brackets get matched against its corpus and rejected — even with no sung lyrics. Confirmed triggers: similes ("hard body hits like fists"), metaphors ("weight not relief"), phrases that are song titles ("weightless," "torn to pieces"), and famous quotes/speeches.

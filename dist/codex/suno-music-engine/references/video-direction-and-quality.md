@@ -10,7 +10,7 @@ A recipe metaphor can represent learning a method, adapting it and judging the r
 
 ## Study the reference as moving filmmaking
 
-The agent owns the breakdown. Search existing production records and saved references before asking the user to repeat it or downloading again. Confirm the exact video, available streams and creator credits. One creator may use different engines on different films. Record separately what the creator credits, what is visible, and what implementation you infer. A video-only download cannot establish sound/edit relationships.
+The agent owns the breakdown. **Pull the actual reference, never a sibling:** when the operator names a video as the bar, download that exact video before any study and state its video ID in the study (see `~/second-brain/recipes/2026-10-14-pull-reference-video-frames-for-comparison.md` for mechanics). Three previous films on this machine (*All Signal*, *Crumbs in the Kernel*, *Soft Parts*) were all studied against *Drop the Prompt* (`YyXGHYvFqlE`) because the named target, *LGTM* (`3TNpOD6bov8`), had never been downloaded (caught 2026-10-16). Confirm the exact video ID, available streams and creator credits. One creator may use different engines on different films. Record separately what the creator credits, what is visible, and what implementation you infer. A video-only download cannot establish sound/edit relationships.
 
 Use a whole-film contact sheet to locate useful passages, then closely study one representative short sequence in motion, with sound where available. Sparse frames and automated scene-change counts miss performance, transitions and musical phrasing. Make a compact timecoded table:
 
@@ -24,11 +24,28 @@ Use a whole-film contact sheet to locate useful passages, then closely study one
 
 Extract a few transferable techniques and apply them to an original shot. Do not copy a channel's signature layout wholesale or replace analysis with adjectives such as cinematic. If inspection is limited to stills, state that limit and leave motion conclusions unverified.
 
+### Quantified reference gates and craft rules (2026-10-16)
+
+1. **Measure the reference numerically (quantified look gate).** Convert "it doesn't look right" into numbers before shipping a look (`python3 scripts/measure-frame-look.py FRAME_OR_DIR`):
+   - **Palette:** sample ~15 frames across the film; `ground` = most common quantised colours, `accent` = mean of the 400 most-saturated pixels.
+   - **Brightness:** median pixel value (0–255) and fraction of pixels above `128`.
+   - **Verified benchmark (2026-10-16):** *LGTM* (`3TNpOD6bov8`) chorus frames sit at **median `18–24`**, **`1.8–4.6%` of pixels above `128`**, ground blue-dominant (`#000010–#101020`, accent `#38EE82`). A draft `"Which One of You"` frame that felt wrong measured **median `34`**, **`14.3%` above `128`**, ground green-dominant — roughly twice as bright with 3–8× the hot pixels.
+   - **Gate:** Before shipping a look, measure your rendered frame against the reference's and state both numbers side by side.
+2. **Cut density is a target, not a feeling.** *LGTM* (`3TNpOD6bov8`) cuts or switches sub-plates every **2–4 seconds**. A 26-second pilot built as two held screens fails no matter how good each screen is (`"Which One of You"` `pilot-01`, 2026-10-16). Measure the reference's cut rate from a 1 fps contact sheet, state your own pilot's cut rate, and compare both numbers before building past the pilot.
+3. **Readability outranks the gag.** On a 2026-10-16 draft frame, a speech-bubble gag covered the hero lyric word at the exact moment it was sung. The reference's own rule is that every lyric line stays readable and karaoke highlighting never runs ahead of the voice.
+4. **One accent plus one rare alarm.** A draft frame carrying green, white, amber and red cards simultaneously reads as rainbow; the reference holds a single accent per world and spends its alarm colour once.
+5. **Linear-RGB shader mix & alarm-wash calibration (2026-10-17).** When scenes render in linear RGB before sRGB conversion (`toSRGB` in post), a seemingly small background shader mix such as `mix(C_INK, C_INK2, 0.42)` plus `coreGlow * 0.18` or an alarm wash `vec3(0.11, 0.008, 0.016)` lifts sRGB pixel values (`0.11^(1/2.2) ≈ 94/255`) so dark frames fail `measure-frame-look.py` at **median `34–55`** (`5–15% > 128`) instead of the *LGTM* benchmark (**median `18–24`**, `1.8–4.6% > 128`). Calibrate dark-world background shaders to `mix(C_INK, C_INK2, 0.20)`, keep radial `coreGlow` under `0.025 + 0.045 * kick`, cap red `sev1` alarm washes at linear `vec3(0.035, 0.005, 0.010)` (`mix <= 0.45`), and limit 2D bokeh particles to `14–16` so every dark plate stays inside `median 18–26`.
+6. **3D `TextPlane` frustum sizing & dual-layer lyric safety (2026-10-17).** At camera distance `d` and vertical `fov`, the visible world height is `2 * d * tan(fov / 2)` and visible width is `height * (16 / 9)`. At `d = 6.8, fov = 34°`, visible width is `7.39` world units; a 21-character string at `capH = 0.44` (`~6.65` units wide) clips the left and right screen borders as soon as the camera orbits (`yaw != 0`) or dollies in (`d < 6`). Size 3D `TextPlane`s from camera frustum width (`capH <= 0.28` for 20+ char headers at `d ≈ 6.8`, `capH <= 0.22` for close-ups at `d ≈ 4–5`), keep 3D `TextPlane` vertical coordinates at `y >= 1.8` whenever a 2D subtitle bar is active at `y = H - 118` so world-space text never collides with screen-space subtitles, and stagger multi-gate corridor `TextPlane` visibility so only the nearest gate's text is visible at once.
+
 ## Prove the difficult part cheaply
 
 Choose a representative shot that exposes the biggest risk: character acting, tactile object interaction, a transition, or type integrated with motion. A quiet logo loop is a poor proxy for a film whose promise is physical comedy. A few seconds may be enough; extend only when the action needs context.
 
 Judge a frame at delivery scale, then the moving action at intended speed with its audio excerpt. Ask whether the subject is distinctive, the action legible, contact and weight convincing for the chosen style, and the reveal worth watching. Detail, realism, cutting speed and simulated activity are not quality scores. A minimal graphic treatment can work; generic primitives may fail when promoted to hero close-ups. Hands and object contact are especially exposed.
+
+A generated direction board records the intended composition, not the renderer's achieved construction. For a physical interaction, inspect actual rendered frames before, at and after contact from the shot cameras. In one copper-key sample, a dais hid the solid key just before it reached the socket, leaving only a detached luminous edge; moving the socket and plinth to meet the floor channel repaired the action. Test object clearance and occlusion in screen space as well as world coordinates before committing a long pass. This is a contact-shot check, not a requirement to use a dais or a specific visual style.
+
+Thin emissive details also need a cut-pair check with the intended shutter setting. In that same sample, Eevee smeared the key's glowing edge at a hard cut despite correctly baked transforms. With slow rigid motion and no free debris, disabling motion blur removed the artefact. Do not carry that setting over to fast particles or other scenes without their own playback check.
 
 Choose the renderer after identifying that risk. Compare the same frame to isolate a rendering difference, but also test a shot authored for the candidate engine's strengths. Moving identical box geometry to Blender does not test Blender's artistic ceiling. Record actual engine/version, source, scene/evaluator, settings and output; a `.blend` still test does not mean the delivered film used Blender. A scene snapshot is not a baked animation.
 
@@ -69,6 +86,56 @@ A rushed preview can create a new fault: one assembled WIP retained only seven f
 For a fractional cut time in a frame-sampled Blender film, the first new-shot frame is `ceil(cut_seconds * fps)`. Using `round()` can assign the cut key to the previous shot and let shutter interpolation sweep between cameras. Bake the sampled poses, keep adjacent quaternion signs consistent, and disable shutter blur around the discontinuity. Set interpolation on the actual FCurve key points: in the tested Blender build, Python-inserted keys remained Bezier despite a Linear UI preference.
 
 Audit the baked paths at fractional frames on both sides of each cut **without calling the analytic evaluator**. The evaluator can overwrite a faulty baked camera and make a broken shutter path appear correct. In the observed regression, the faulty path deviated by about 5.4 metres; explicit Linear keys and corrected cut indices reduced the audited maximum position/focus error to about 0.000058 metres. These values describe that scene, not portable acceptance tolerances. Keep the contiguous encoded motion probe as a separate visual check.
+
+## Design the key images before building the engine
+
+The default failure of a code-driven music video is not technical. Two observed films were built engine-first — geometry, simulation and camera authored first, with the treatment written afterwards to describe whatever the engine produced. Both passed every technical gate and both drew the same verdict from the viewer: it does not look like anything. In the second case the treatment named a protagonist fragment that a reader could not find in a frame sample, because no frame had ever been composed to carry it.
+
+An engine-first film has no referent. Nothing can be compared against anything, so "does it look right" is unanswerable and every check collapses into "does it render", which always passes.
+
+Invert the order:
+
+1. **Write the story and its key moments first**, as a small set of specific beats — eight to twelve for a five-minute film — each stating what the viewer must understand at that moment, not what the geometry does.
+2. **Generate a target still for each key moment** before any engine work, using an image model. These are the referents. They fix subject, scale, framing, palette and what the shot is *about*, cheaply and in minutes, at the stage where changing your mind costs nothing.
+3. **Review the stills as a sequence** against the song. If the story does not read as a strip of eight stills, it will not read as five minutes of motion. Fix it here, where a fix is one regenerated image.
+4. **Then build the engine to reproduce those frames**, treating each target still as the acceptance test for its shot.
+5. **Verify every shot against its own target image**, as a comparison, never as an inspection of the render on its own terms. Looking at your own output and judging it good passes every time and answers a question nobody asked.
+
+The generated stills are direction, not footage. They are not expected to appear in the film, and the engine does not need to match them exactly — they exist so that "right" is defined by something outside the renderer before the renderer runs.
+
+This also repairs the gate order. Technical export verification, cut measurement and encode checks are all downstream; they protect a film that is already worth watching and can do nothing for one that is not. Establish the images first, then spend the render budget.
+
+## Measure cut harshness, not just cut correctness
+
+The section above makes cuts technically correct: continuous transforms, no shutter sweep across a discontinuity, audited baked paths. A cut can pass every one of those checks and still read to a viewer as the picture glitching.
+
+An observed five-minute film carried 34 hard cuts, one roughly every nine seconds, each alternating an extreme warm close-up against a wide shot on near-black. Measured as mean per-frame luma difference, the film sat at 1.8 and every cut landed between 29 and 90 — sixteen to fifty times baseline. A viewer reported six separate timestamps as "glitches"; three were cuts, and the reported ones were not the worst. One was the mildest of all 34.
+
+- Before encoding, compute the per-frame luma delta across the whole film and rank the cuts against the film's own mean. `tblend=all_mode=difference,signalstats` over the sequence gives this in one pass on the encoded file. The ratio is the diagnostic, not the absolute number.
+- A cut whose delta is tens of times baseline is a brightness slam. It is legitimate editorially, but it must be a choice someone made, not a number nobody looked at. Full-frame orange to mostly black in one frame reads as a blip whatever the treatment says.
+- Where the slam is unintended, a three-to-four-frame cross-dissolve removes it without touching content or the edit's rhythm. Frames are enough; no re-render is needed.
+- Cluster viewer reports before fixing anything. Reports arriving as a list of timestamps usually collapse into two or three mechanical classes. Classify each by measurement, confirm the classes predict the remaining reports, and fix the class.
+
+## A named limitation is not a discharged defect
+
+The same film's code review recorded, accurately and in advance, that only camera, focus, lens and hero location carried shutter keys, and that other moving geometry had no complete object motion blur. It then approved the render. The unblurred geometry was small fast debris, which at 24 fps strobes: three of the viewer's six reported "glitches" were exactly that, in the region carrying the densest debris.
+
+Writing a limitation into a review does not convert it into an accepted trade-off. Either fix it, or get the limitation accepted by the person who will watch the film, by name, before the long render starts. A limitation the viewer has not agreed to is a defect with documentation attached.
+
+To check before shipping: sample three consecutive frames in the densest motion region, crop and magnify. Smoothly moving geometry shows small displacements with softened leading edges. Strobing shows large displacements with perfectly crisp edges. Synthetic shutter by temporal blending of adjacent frames can soften it afterwards from the frame sequence, at some cost in global sharpness.
+
+## The encoded file is a derivative; the frames are the master
+
+Treat the rendered PNG sequence as the deliverable and the video file as one lossy projection of it. Keeping the frames means a quality complaint can be answered by re-encoding in minutes rather than re-rendering in hours.
+
+An observed export encoded h264 `yuv420p` at about 4.9 Mbit/s. Measured against the surviving lossless frames, the red channel had SSIM 0.693 while green and blue held 0.977 and 0.963. The film was copper on dark blue, so most of its fine detail lived in red chroma, and 4:2:0 subsampling discards half of it. Every existing check passed: full decode, frame count, duration, hashes. None of them looks at colour.
+
+- For saturated single-hue material, verify the encode per channel against the source frames, not as a single average. `ssim` and `psnr` reporting R, G and B separately will expose this; an overall figure hides it.
+- The cause is subsampling, not bitrate. Re-encoding the same content as 10-bit 4:2:0 moved red only from 0.693 to 0.722; 4:4:4 at identical file size moved it to 0.984. Spending more bits on the wrong chroma format does not recover the detail.
+- Expect 4:4:4 masters to be rejected by some players. Keep it as the archival and upload master, and make a subsampled copy only for casual viewing.
+- Do not predict artefacts without testing for them. Banding was expected in this film's dark regions from 8-bit at low bitrate; amplifying the shadows showed the dark areas were true black with no gradient present, so there was nothing to band.
+
+Verify a re-encode as carefully as a render. In an observed attempt, `-shortest` silently trimmed four frames and clipped the film's closing beat, and `-c:a copy` from an `.m4a` propagated Opus into an MP4 container, because the wrapper's extension did not match its codec. Probe the output's frame count, duration and audio codec against the source before replacing anything.
 
 ## Carry the lesson into the complete film
 
