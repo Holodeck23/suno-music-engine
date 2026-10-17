@@ -37,6 +37,21 @@ Extract a few transferable techniques and apply them to an original shot. Do not
 5. **Linear-RGB shader mix & alarm-wash calibration (2026-10-17).** When scenes render in linear RGB before sRGB conversion (`toSRGB` in post), a seemingly small background shader mix such as `mix(C_INK, C_INK2, 0.42)` plus `coreGlow * 0.18` or an alarm wash `vec3(0.11, 0.008, 0.016)` lifts sRGB pixel values (`0.11^(1/2.2) ≈ 94/255`) so dark frames fail `measure-frame-look.py` at **median `34–55`** (`5–15% > 128`) instead of the *LGTM* benchmark (**median `18–24`**, `1.8–4.6% > 128`). Calibrate dark-world background shaders to `mix(C_INK, C_INK2, 0.20)`, keep radial `coreGlow` under `0.025 + 0.045 * kick`, cap red `sev1` alarm washes at linear `vec3(0.035, 0.005, 0.010)` (`mix <= 0.45`), and limit 2D bokeh particles to `14–16` so every dark plate stays inside `median 18–26`.
 6. **3D `TextPlane` frustum sizing & dual-layer lyric safety (2026-10-17).** At camera distance `d` and vertical `fov`, the visible world height is `2 * d * tan(fov / 2)` and visible width is `height * (16 / 9)`. At `d = 6.8, fov = 34°`, visible width is `7.39` world units; a 21-character string at `capH = 0.44` (`~6.65` units wide) clips the left and right screen borders as soon as the camera orbits (`yaw != 0`) or dollies in (`d < 6`). Size 3D `TextPlane`s from camera frustum width (`capH <= 0.28` for 20+ char headers at `d ≈ 6.8`, `capH <= 0.22` for close-ups at `d ≈ 4–5`), keep 3D `TextPlane` vertical coordinates at `y >= 1.8` whenever a 2D subtitle bar is active at `y = H - 118` so world-space text never collides with screen-space subtitles, and stagger multi-gate corridor `TextPlane` visibility so only the nearest gate's text is visible at once.
 
+## Move the needle on every film: reuse the engine plumbing, never clone the visual kit (2026-10-17)
+
+When `"All Signal"` (`full-v3`) was built by copying the `"Which One of You"` codebase, it added three new 3D setpieces (the Grandmaster Chessboard, the Blank Canvas Bridge, and the Warm Kitchen Table) but carried over the previous song's exact graphic kit (`drawBot` terracotta blocky characters with speech bubbles, `drawTerminalCard` macOS terminal windows, `drawRubberStamp`, and additive wireframe boxes on `#05070C`). The operator's immediate verdict: *"pretty much the exact same style as the last one. good - but i want every attempt to move the needle... change something, improve something, try something."*
+
+Separate **engine plumbing** from **visual vocabulary**:
+
+- **Always reuse engine plumbing:** deterministic 60 fps `window.__renderFrame(t)` clock, WebSocket binary JPEG frame pipe (`quality: 0.96`), headless Chrome Metal GPU flags, precomputed `audio.json` / stem RMS & spectral envelopes, quantified look/cut-density gates, and lossless/high-bitrate `ffmpeg` encoding.
+- **Never reskin the previous song's visual kit (`drawBot`, `drawTerminalCard`, `drawRubberStamp`, or its signature HUD/card layout)** unless the user explicitly asks for a direct sequel in that exact style.
+- **Every new video must introduce at least one genuine visual/technical leap** suited to the track's genre and sonic architecture — for example:
+  - Custom GLSL raymarched SDF / ferrofluid / volumetric light-shaft shaders driven by spectral centroid and sub-bass pressure;
+  - High-density GPU-instanced megastructures (`THREE.InstancedMesh` with custom vertex/fragment displacement shaders, 10,000–100,000 reactive instances);
+  - Physical/topographical audio landscapes, cymatic fluid/particle fields, or silhouette/cel-shaded/brutalist architectural worlds;
+  - Kinetic typography or diegetic world-space projection mapping that looks nothing like a 2D code editor card deck.
+- **State the visual leap up front** before writing scene code: name what this film is doing that the previous film did not, and prove that leap in a short 20–30 second 1080p60 pilot before committing to a full-length render.
+
 ## Prove the difficult part cheaply
 
 Choose a representative shot that exposes the biggest risk: character acting, tactile object interaction, a transition, or type integrated with motion. A quiet logo loop is a poor proxy for a film whose promise is physical comedy. A few seconds may be enough; extend only when the action needs context.
